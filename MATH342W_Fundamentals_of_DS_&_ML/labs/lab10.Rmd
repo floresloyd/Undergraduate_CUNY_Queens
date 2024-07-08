@@ -1,0 +1,697 @@
+---
+title: "Lab 10"
+author: "Loyd Flores"
+output: 
+  pdf_document:
+    latex_engine: xelatex
+---
+
+#YARF
+
+For the next couple of labs, I want you to make some use of a package I wrote that offers convenient and flexible tree-building and random forest-building. Make sure you have a JDK installed first
+
+https://www.oracle.com/java/technologies/downloads/
+
+Then try to install rJava
+
+```{r}
+options(java.parameters = "-Xmx8000m")
+pacman::p_load(rJava)
+.jinit()
+```
+
+If you have error, messages, try to google them. Everyone has trouble with rJava!
+
+If that worked, please try to run the following which will install YARF from my github:
+
+```{r}
+if (!pacman::p_isinstalled(YARF)){
+  pacman::p_install_gh("kapelner/YARF/YARFJARs", ref = "dev")
+  pacman::p_install_gh("kapelner/YARF/YARF", ref = "dev", force = TRUE)
+}
+pacman::p_load(YARF)
+```
+
+Please try to fix the error messages (if they exist) as best as you can. I can help on slack.
+
+
+# Missing Data
+
+Load up the Boston Housing Data and separate into matrix `X` for the features and vector `y` for the response. Randomize the rows
+
+```{r}
+rm(list = ls())
+set.seed(1)
+boston = MASS::Boston
+boston_shuffled = boston[sample(1 : nrow(boston)), ]
+X = as.matrix(boston_shuffled[, 1 : 13])
+y = boston_shuffled$medv
+rm(boston, boston_shuffled)
+```
+
+
+
+Similar to lab 1, write a function that takes a matrix and punches holes (i.e. sets entries equal to `NA`) randomly with an argument `prob_missing`.
+
+```{r}
+punch_holes = function(mat, prob_missing){
+  n = nrow(mat) * ncol(mat)
+  is_missing = as.logical(rbinom(n, 1, prob_missing))
+  mat[is_missing] = NA
+  mat
+}
+```
+
+Create a matrix `Xmiss` which is `X` but has missingness with probability of 10% using the function you just wrote. 
+
+```{r}
+#TO-DO
+Xmiss = punch_holes(X, 0.1)
+print("Complete ...")
+```
+
+What type of missing data mechanism created the missingness in `Xmiss`?
+
+#TO-DO: A function called punch_holes that serves as listmimse delesion 
+
+Also, generate the M matrix and delete columns that have no missingness.
+
+```{r}
+M = apply(is.na(Xmiss), 2, as.numeric)
+colnames(M) = paste("is_missing_", colnames(X), sep = "")
+M = M[, colSums(M) > 0]
+
+```
+
+Split the first 400 observations were the training data and the remaining observations are the test set. For Xmiss, cbind on the M so the model has a chance to fit on "is missing" as we discussed in class.
+
+```{r}
+train_idx = 1 : 400
+test_idx = setdiff(1 : nrow(X), train_idx)
+X_train =     X[train_idx, ]
+Xmiss_train = cbind(Xmiss, M)[train_idx, ]
+y_train =     y[train_idx]
+X_test =      X[test_idx, ]
+Xmiss_test =  cbind(Xmiss, M)[test_idx, ]
+y_test =      y[test_idx]
+```
+
+Fit a random forest model of `y_train ~ X_train`, report oos s_e (not oob) on `X_test`. This ignores missingness
+
+```{r}
+#TO-DO
+mod_rf = YARF(data.frame(X_train), y_train)
+y_hat_test = predict(mod_rf, data.frame(X_test))
+sqrt(mean((y_hat_test - y_test)^2))
+```
+
+Impute the missingness in `Xmiss` using the feature averages to create a matrix `Ximp_naive_train` and `Ximp_naive_test`. 
+
+```{r}
+#TO-DO
+x_averages = array(NA, ncol(X))
+Ximp_naive_train = Xmiss_train
+Ximp_naive_test = Xmiss_test
+  
+for(j in 1 : ncol(X)){
+  x_averages[j] = mean(Xmiss_train, na.rm = TRUE)
+
+  Ximp_naive_train[is.na(Xmiss_train[, j]), j] = x_averages[j]
+  Ximp_naive_test[is.na(Xmiss_test[, j]), j] = x_averages[j]
+
+  }
+```
+
+Fit a random forest model of `y_train ~ Ximp_naive_train`, report oos s_e (not oob) on `Ximp_naive_test`.
+
+```{r}
+#TO-DO
+mod_rf = YARF(data.frame(Ximp_naive_train), y_train)
+y_hat_test = predict(mod_rf, data.frame(Ximp_naive_test))
+sqrt(mean((y_hat_test - y_test)^2))
+```
+
+How much predictive performance was lost due to missingness when naive imputation was used vs when there was no missingness?
+
+#TO-DO
+without filling in missigness we got 3.421844 but when we filled in we got a better result  3.645625 with a total of 0.223781 increase
+
+
+Use `missForest` to impute the missing entries to create a matrix `Ximp_MF_train` and `Ximp_MF_test`.
+
+```{r}
+pacman::p_load(missForest)
+#TO-DO
+Ximp_MF_train = missForest(Xmiss_train)$ximp
+Xymiss = rbind(
+  cbind(Xmiss_train, y_train),
+  cbind(Xmiss_test, NA)
+)
+
+Xyimp_miss = missForest(Xymiss)$ximp
+Ximp_MF_train = Xyimp_miss[train_idx, 1 : ncol(X)]
+Ximp_MF_test = Xyimp_miss[test_idx, 1 : ncol(X)]
+
+```
+
+Fit a random forest model of `y_train ~ Ximp_MF_train`, report oos s_e (not oob) on `Ximp_MF_test`.
+
+```{r}
+#TO-DO
+mod_rf = YARF(data.frame(Ximp_MF_train), y_train)
+y_hat_test = predict(mod_rf, data.frame(Ximp_MF_test))
+sqrt(mean((y_hat_test - y_test)^2))
+```
+
+How much predictive performance was lost due to missingness when `missForest` imputation was used?
+
+
+#TO-DO : 3.645625 - 3.489791 = 0.155834
+
+
+Why did `missForest` imputation perform better than naive imputation?
+
+#TO-DO: naive just fills it in with the mean while missforest utilizes a form of random resampling that acts kind of like k-fold-cross validation to ensure less dependency.
+
+Reload the feature matrix:
+
+```{r}
+rm(list = ls())
+X = as.matrix(MASS::Boston[, 1 : 13])
+```
+
+Create missingness in the feature `lstat` that is due to a MAR missing data mechanism.
+
+```{r}
+#TO-DO
+prob_missing = plogis(scale(X[, "age"], center = TRUE, scale = FALSE) * 0.1)  # Logistic function to get probabilities
+is_missing = runif(nrow(X)) < prob_missing  # Random draw to determine missingness
+X[is_missing, "lstat"] = NA  # Assign NA to missing entries
+head(X)
+```
+
+Create missingness in the feature `rm` that is a NMAR missing data mechanism.
+
+```{r}
+#TO-DO
+X2 = as.matrix(MASS::Boston[, 1:13])
+
+threshold = median(X[, "rm"])  # Setting a threshold at the median
+is_missing = X[, "rm"] < threshold  # More likely to be missing if below the median
+X[is_missing, "rm"] = NA  # Assign NA to entries below the threshold
+
+head(X)
+```
+
+
+#Bagged Trees and Random Forest
+
+Take a training sample of n = 2000 observations from the diamonds data.
+
+```{r}
+rm(list = ls())
+pacman::p_load(tidyverse)
+pacman::p_load(randomForest)
+set.seed(1)
+diamonds_train = ggplot2::diamonds %>% 
+  sample_n(2000)
+
+y_train = diamonds_train$price
+X_train = diamonds_train %>% select(-price)
+
+```
+
+
+Using the diamonds data, find the oob s_e for a bagged-tree model using 1, 2, 5, 10, 20, 30, 40, 50, 100, 200, 300, 400, 500, 1000 trees. If you are using the `randomForest` package, you can create the bagged tree model via setting an argument within the RF constructor function. Plot.
+
+```{r}
+num_trees_values = c(1, 2, 5, 10, 20, 30, 40, 50, 100, 200, 300, 400, 500, 1000)
+oob_se_bagged_trees_mod_by_num_trees = array(NA, length(num_trees_values))
+#TO-DO
+# Loop through number of trees and create bagged tree models
+for (i in 1:length(num_trees_values)) {
+  # Create bagged tree model using randomForest with specified number of trees
+  mod_bag <- randomForest(X_train, y_train, ntree = num_trees_values[i])
+  
+  # Extract OOB SE from the model object
+  oob_se_bagged_trees_mod_by_num_trees[i] <- sqrt(mean(mod_bag$oob.error^2))
+}
+```
+
+```{r}
+# Plot OOB standard error against number of trees
+#plot(num_trees_values, oob_se_bagged_trees_mod_by_num_trees, type = "b",
+     #xlab = "Number of Trees", ylab = "OOB Standard Error", main = "OOB Error Rate by Number of Trees")
+
+
+```
+
+Find the bootstrap s_e for a RF model using 1, 2, 5, 10, 20, 30, 40, 50, 100, 200, 300, 400, 500, 1000 trees. If you are using the `randomForest` package, you can calculate oob residuals via `e_oob = y_train - rf_mod$predicted`. Plot.
+
+```{r}
+oob_se_rf_mod_by_num_trees = array(NA, length(num_trees_values))
+#TO-DO
+
+# Initialize vector to store OOB standard error for each model
+oob_se_rf_mod_by_num_trees = array(NA, length(num_trees_values))
+
+# Loop over number of trees values
+for (i in seq_along(num_trees_values)) {
+    # Fit random forest model
+    rf_mod = randomForest(X_train, y_train, ntree = num_trees_values[i], keep.inbag = TRUE)
+    
+    # Calculate OOB predictions and residuals
+    e_oob = y_train - rf_mod$predicted
+    
+    # Calculate standard error of the OOB residuals
+    oob_se_rf_mod_by_num_trees[i] = sd(e_oob, na.rm = TRUE) / sqrt(sum(!is.na(e_oob)))
+}
+
+# Plot OOB standard error against number of trees
+plot(num_trees_values, oob_se_rf_mod_by_num_trees, type = "b",
+     xlab = "Number of Trees", ylab = "OOB Standard Error", main = "OOB SE by Number of Trees")
+```
+
+What is the percentage gain / loss in performance of the RF model vs bagged trees model for each number of trees? Gains are negative (as in lower oos s_e).
+
+```{r}
+cbind(
+  num_trees_values,
+  (oob_se_rf_mod_by_num_trees - oob_se_bagged_trees_mod_by_num_trees) / oob_se_bagged_trees_mod_by_num_trees * 100
+)
+```
+
+Why was this the result?
+
+#TODO: at a certain point the development of the tree is will slowdown and the changes will be minute.
+
+Plot oob s_e by number of trees for both RF and bagged trees by creating a long data frame from the two results.
+
+```{r}
+#TO-DO
+results_df <- data.frame(
+  num_trees = rep(num_trees_values, times = 2),
+  oob_se = c(oob_se_rf_mod_by_num_trees, oob_se_bagged_trees_mod_by_num_trees),
+  model = rep(c("Random Forest", "Bagged Trees"), each = length(num_trees_values))
+)
+
+# View the dataframe
+print(results_df)
+
+# Load ggplot2 if not already loaded
+library(ggplot2)
+
+# Plotting
+ggplot(results_df, aes(x = num_trees, y = oob_se, color = model, group = model)) +
+  geom_line() +
+  geom_point() +
+  scale_x_log10() +  # Optional: Log scale for x-axis if tree numbers vary widely
+  labs(title = "OOB Standard Error by Number of Trees",
+       x = "Number of Trees",
+       y = "OOB Standard Error",
+       color = "Model Type") +
+  theme_minimal()
+```
+
+Build RF models for 500 trees using different `mtry` values: 1, 2, ... the maximum. That maximum will be the number of features assuming that we do not binarize categorical features if you are using `randomForest` or the number of features assuming binarization of the categorical features if you are using `YARF`. Calculate oob s_e for all mtry values.
+
+```{r}
+oob_se_by_mtry = array(NA, ncol(diamonds_train))
+#TO-DO
+diamonds_sample = diamonds %>% sample_n(2000)
+y_train = diamonds_sample$price
+X_train = diamonds_sample %>% select(-price)
+
+# Define range for mtry
+max_mtry = ncol(X_train)
+mtry_values = 1:max_mtry
+oob_se_by_mtry = numeric(length(mtry_values))
+
+# Build model and calculate oob se
+for (i in seq_along(mtry_values)) {
+  rf_mod <- randomForest(X_train, y_train, ntree = 500, mtry = mtry_values[i], keep.inbag = TRUE)
+  e_oob <- y_train - rf_mod$predicted
+  oob_se_by_mtry[i] <- sd(e_oob, na.rm = TRUE) / sqrt(sum(!is.na(e_oob)))
+}
+```
+
+Plot oob s_e by mtry.
+
+```{r}
+#TO-DO
+results_df <- data.frame(
+  mtry = mtry_values,
+  oob_se = oob_se_by_mtry
+)
+
+# Plotting
+ggplot(results_df, aes(x = mtry, y = oob_se)) +
+  geom_line() +
+  geom_point(shape = 21, fill = "blue") +
+  labs(title = "OOB Standard Error by mtry Values",
+       x = "mtry (Number of Variables Tried at Each Split)",
+       y = "OOB Standard Error") +
+  theme_minimal()
+```
+
+Take a sample of n = 2000 observations from the adult data and name it `adult_sample`. Then impute missing values using missForest.
+
+```{r}
+rm(list = ls())
+set.seed(1)
+pacman::p_load_gh("coatless/ucidata")
+pacman::p_load(dplyr, randomForest, missForest, ucidata)
+
+data("adult")
+adult_sample = adult %>% 
+  sample_n(2000)
+
+
+# Impute missing values
+adult_sample = missForest(adult_sample)$ximp
+```
+
+
+Using the adult_train data, find the bootstrap misclassification error for a bagged-tree model using 1, 2, 5, 10, 20, 30, 40, 50, 100, 200, 300, 400, 500, 1000 trees. Plot.
+
+```{r}
+
+
+
+num_trees_values = c(1, 2, 5, 10, 20, 30, 40, 50, 100, 200, 300, 400, 500, 1000)
+
+# Initialize a vector to store OOB errors
+oob_se_bagged_trees_mod_by_num_trees = numeric(length(num_trees_values))
+
+# Loop over the number of trees, fit the model, and store the OOB error
+for (i in seq_along(num_trees_values)) {
+  set.seed(1)  # for reproducibility
+  rf_model = randomForest(income ~ ., data = adult_sample,
+                          mtry = sqrt(ncol(adult_sample) - 1),
+                          ntree = num_trees_values[i],
+                          importance = TRUE,
+                          do.trace = 100,
+                          keep.forest = TRUE,
+                          replace = TRUE)
+  oob_se_bagged_trees_mod_by_num_trees[i] = rf_model$err.rate[rf_model$ntree, "OOB"]
+}
+
+# Plot the OOB error against the number of trees
+plot(num_trees_values, oob_se_bagged_trees_mod_by_num_trees, type = "b",
+     xlab = "Number of Trees", ylab = "OOB Error Rate",
+     main = "OOB Error Rate vs. Number of Trees in Bagged Trees Model")
+```
+
+Using the adult_train data, find the bootstrap misclassification error for an RF model using 1, 2, 5, 10, 20, 30, 40, 50, 100, 200, 300, 400, 500, 1000 trees.
+
+```{r}
+oob_se_rf_mod_by_num_trees = array(NA, length(num_trees_values))
+#TO-DO
+for (i in seq_along(num_trees_values)) {
+  set.seed(1)  # for reproducibility
+  rf_model = randomForest(income ~ ., data = adult_sample,
+                          mtry = sqrt(ncol(adult_sample) - 1),
+                          ntree = num_trees_values[i],
+                          importance = TRUE,
+                          do.trace = 100,
+                          keep.forest = TRUE,
+                          replace = TRUE)
+  # Access OOB error rate directly from model object
+  oob_se_rf_mod_by_num_trees[i] = mean(rf_model$oob.error)
+}
+```
+
+What is the percentage gain / loss in performance of the RF model vs bagged trees model?
+
+```{r}
+cbind(
+  num_trees_values,
+  (oob_se_rf_mod_by_num_trees - oob_se_bagged_trees_mod_by_num_trees) / oob_se_bagged_trees_mod_by_num_trees * 100
+)
+```
+
+Build RF models on adult_train for 500 trees using different `mtry` values: 1, 2, ... the maximum (see above as maximum is defined by the specific RF algorithm implementation). 
+
+```{r}
+
+#TO-DO+
+data("adult")
+
+# Split data into training and testing sets (replace 0.75 with your desired split ratio)
+split = sample(1:nrow(adult), size = nrow(adult) * 0.75)
+adult_train = adult[split, ]
+adult_test = adult[-split, ]
+
+# Impute missing values using missForest
+#adult_train = missForest(adult_train)$ximp
+
+# Define maximum mtry
+#max_mtry = ncol(adult_train) - 1
+
+# OOB error for different mtry values (500 trees)
+#oob_se_by_mtry = array(NA, max_mtry)
+#for (m in 1:max_mtry) {
+ # set.seed(1)
+  #rf_model = randomForest(income ~ ., data = adult_train,
+ #                         mtry = m,
+  #                        ntree = 500,
+   #                       importance = TRUE,
+    #                      do.trace = 100,
+     #                     keep.forest = TRUE,
+      #                    replace = TRUE)
+#  oob_se_by_mtry[m] = mean(rf_model$oob.error)
+#}
+
+# OOB error for different number of trees (mtry = sqrt(ncol(adult_train) - 1))
+#num_trees_values = c(1, 2, 5, 10, 20, 30, 40, 50, 100, 200, 300, 400, 500, 1000)
+#oob_se_rf_mod_by_num_trees = array(NA, length(num_trees_values))
+#for (i in seq_along(num_trees_values)) {
+ # set.seed(1)
+  #rf_model = randomForest(income ~ ., data = adult_train,
+   #                       mtry = sqrt(ncol(adult_train) - 1),
+      #                    ntree = num_trees_values[i],
+       #                   importance = TRUE,
+        #                  do.trace = 100,
+         #                 keep.forest = TRUE,
+          #                replace = TRUE)
+  #oob_se_rf_mod_by_num_trees[i] = mean(rf_model$oob.error)
+#}
+
+# Now you can use oob_se_by_mtry and oob_se_rf_mod_by_num_trees for further analysis
+
+# Example: Plot OOB error vs mtry
+#plot(1:max_mtry, oob_se_by_mtry, type = "b",
+    # xlab = "mtry", ylab = "OOB Error Rate",
+     #main = "OOB Error Rate vs. mtry in Random Forest Model")
+
+# Example: Plot OOB error vs number of trees
+#plot(num_trees_values, oob_se_rf_mod_by_num_trees, type = "b",
+     #xlab = "Number of Trees", ylab = "OOB Error Rate",
+     #main = "OOB Error Rate vs. Number of Trees in Random Forest Model")
+
+```
+
+
+Plot bootstrap misclassification error by `mtry`.
+
+```{r}
+#TO-DO
+# Example: Plot OOB error vs mtry
+#plot(1:max_mtry, oob_se_by_mtry, type = "b",
+    # xlab = "mtry", ylab = "OOB Error Rate",
+     #main = "OOB Error Rate vs. mtry in Random Forest Model")
+```
+
+Is `mtry` an important hyperparameter to optimize when using the RF algorithm? Explain
+
+#TO-DO - yes it controls the number of features randomly considered at each split 
+
+Identify the best model among all values of `mtry`. Fit this RF model. Then report the following oob error metrics: misclassification error, precision, recall, F1, FDR, FOR and compute a confusion matrix.
+
+```{r}
+#TO-DO
+#plot(1:max_mtry, oob_se_by_mtry, type = "b",
+    # xlab = "mtry", ylab = "OOB Error Rate",
+     #main = "OOB Error Rate vs. mtry in Random Forest Model")
+```
+
+Is this a good model? (yes/no and explain).
+
+#TO-DO: it is a great model
+
+There are probability asymmetric costs to the two types of errors. Assign two costs below and calculate oob total cost.
+
+```{r}
+#fp_cost = 
+#fn_cost = 
+#TO-DO
+```
+
+# Asymmetric Cost Modeling, ROC and DET curves
+
+Fit a logistic regression model to the adult_train missingness-imputed data.
+
+```{r}
+rm(list = setdiff(ls(), "adult_train"))
+#TO-DO
+library(caret)  # for data splitting and preprocessing
+pacman::p_load("mice")
+library(nnet)   # for multinom function to fit logistic regression
+library(pROC)   # for ROC curve
+pacman::p_load("ROCR")
+
+imputed_data <- mice(adult_train, m=5, method='pmm', seed=500)
+completed_data <- complete(imputed_data)
+
+# Define the model - assuming 'income' is the target variable
+# Adjust the formula as per your dataset
+logit_model <- glm(income ~ ., data = completed_data, family = binomial())
+
+# Summary of the model to check coefficients and model validity
+summary(logit_model)
+
+# Predict probabilities
+probabilities <- predict(logit_model, type = "response")
+
+# ROC Curve
+roc_curve <- roc(completed_data$income, probabilities)
+plot(roc_curve, main="ROC Curve")
+
+# AUC Score
+auc(roc_curve)
+
+# DET Curve using ROCR
+pred <- prediction(probabilities, completed_data$income)
+perf <- performance(pred, "tpr", "fpr")
+plot(perf, colorize = TRUE, main="DET Curve")
+
+```
+
+Use the function from class to calculate all the error metrics (misclassification error, precision, recall, F1, FDR, FOR) for the values of the probability threshold being 0.001, 0.002, ..., 0.999 in a tibble (dplyr data frame).
+
+```{r}
+pacman::p_load(tidyverse)
+asymmetric_predictions_results = tibble(
+  p_hat_threshold = seq(from = 0.001, to = 0.999, by = 0.001),
+  misclassification_error = NA, 
+  precision = NA, 
+  recall = NA, 
+  F1 = NA, 
+  FDR = NA, 
+  FOR = NA
+)
+# Predict probabilities
+probabilities <- predict(logit_model, completed_data, type = "response")
+
+# Ensure the actual target variable is a factor with levels 0 and 1
+actual <- factor(completed_data$income, levels = c("0", "1"))
+
+# Function to calculate metrics
+calculate_metrics <- function(threshold, actual, predicted) {
+  # Convert predicted probabilities to binary predictions based on the threshold
+  prediction <- ifelse(predicted >= threshold, "1", "0")
+  prediction <- factor(prediction, levels = c("0", "1"))
+  
+  # Only compute metrics if there are both positive and negative predictions
+  if (all(levels(prediction) %in% levels(actual))) {
+    cm <- confusionMatrix(prediction, actual, positive = "1")
+    return(data.frame(
+      misclassification_error = 1 - cm$overall['Accuracy'],
+      precision = cm$byClass['Precision'],
+      recall = cm$byClass['Sensitivity'],
+      F1 = 2 * (cm$byClass['Precision'] * cm$byClass['Sensitivity']) / (cm$byClass['Precision'] + cm$byClass['Sensitivity']),
+      FDR = 1 - cm$byClass['Precision'],
+      FOR = 1 - cm$byClass['Negative Predictive Value']
+    ))
+  } else {
+    return(data.frame(
+      misclassification_error = NA,
+      precision = NA,
+      recall = NA,
+      F1 = NA,
+      FDR = NA,
+      FOR = NA
+    ))
+  }
+}
+
+# Create the tibble and calculate metrics for each threshold
+asymmetric_predictions_results <- tibble(
+  p_hat_threshold = seq(from = 0.001, to = 0.999, by = 0.001)
+) %>%
+  mutate(metrics = map(p_hat_threshold, calculate_metrics, actual = actual, predicted = probabilities)) %>%
+  unnest(metrics)
+
+# View the results
+print(asymmetric_predictions_results)
+```
+
+Calculate the column `total_cost` and append it to this data frame via `mutate`.
+
+```{r}
+#TO-DO
+cost_per_misclassification = 1
+cost_per_fdr = 2
+cost_per_for = 1.5
+
+asymmetric_predictions_results <- asymmetric_predictions_results %>%
+  mutate(total_cost = misclassification_error * cost_per_misclassification +
+                      FDR * cost_per_fdr +
+                      FOR * cost_per_for)
+
+# View the updated results
+print(asymmetric_predictions_results)
+```
+
+Which is the lowest total cost? What is the "winning" probability threshold value providing that minimum total cost?
+
+```{r}
+#TO-DO
+# Find the row with the minimum total cost
+min_cost_data <- asymmetric_predictions_results %>%
+  filter(total_cost == min(total_cost, na.rm = TRUE)) %>%
+  slice(1)  # In case there are multiple minima, take the first
+
+# Display the result
+print(min_cost_data)
+```
+
+Plot an ROC curve and interpret.
+
+```{r}
+#TO-DO
+roc_curve <- roc(response = completed_data$income, predictor = probabilities)
+plot(roc_curve, main = "ROC Curve", col = "#1c61b6", lwd = 2)
+abline(a = 0, b = 1, lty = 2, col = "red")  # Adding a diagonal reference line
+
+```
+
+#TO-DO interpretation 
+The ROC curve indicates a good predictive model, as it significantly bows towards the top left corner, suggesting a high true positive rate with a low false positive rate across various thresholds.
+
+Calculate AUC and interpret.
+
+```{r}
+#TO-DO
+auc_value <- auc(roc_curve)
+print(paste("AUC value:", auc_value))
+```
+
+#TO-DO interpretation
+The AUC value of 0.9095 indicates excellent performance. This suggests that the classifier does very well at distinguishing between the positive class and the negative class.
+
+Plot a DET curve and interpret.
+
+```{r}
+#TO-DOpred <- prediction(probabilities, actual)
+perf <- performance(pred, "fnr", "fpr")
+
+# Plot the DET curve
+plot(perf, colorize = TRUE)
+abline(0, 1, lty = 2, col = "red")  # Adding a reference line
+
+# Transforming the axis to normal deviate scale might require additional steps.
+```
+
+#TO-DO interpretation
+The DET curve illustrates a model with strong performance, evidenced by the steep curve towards the lower left, which indicates a low false match rate for most thresholds before the false non-match rate begins to increase significantly.

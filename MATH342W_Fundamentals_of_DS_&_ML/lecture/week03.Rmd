@@ -1,0 +1,725 @@
+---
+title: "Practice Lectures Week 3 MATH 342W Queens College"
+author: "Professor Adam Kapelner"
+date: "Feb 14, 2022"
+---
+
+
+## First modeling exercise
+
+Before we model, let's fabricate the training data! Let's try to build a data matrix similar to the one in the class example. Let's imagine $n = 100$ and $x_1$ is salary, $x_2$ is a dummy variable for missing loan payment in their credit history, $x_3$ is a ordinal variable for crime type coded 0, 1, 2 or 3.
+
+We can "make up" a dataset using the sampling we just learned.
+
+```{r}
+n = 100 #number of historical objects: the people
+p = 3 #number of features about each
+# row == entry, col == feature
+X = matrix(NA, nrow = n, ncol = p)
+X
+```
+
+Some more useful matrix functions:
+
+```{r}
+nrow(X)
+ncol(X)
+dim(X)
+length(X) #countless bugs!
+c(X)
+```
+
+Why should we fill up this matrix with NA's? No technical reason; it is done for a practical reason. Every value is currently "missing" until it's filled in i.e. it will let you know if you didn't fill any of the values.
+
+We can also name rows and columns. Each row is a historical person and each column is a feature about that person.
+
+```{r}
+colnames(X) = c(
+  "salary", 
+  "has_past_unpaid_loan", 
+  "past_crime_severity"
+)
+colnames(X) #setter and a getter
+fake_first_names = c(
+  "Sophia", "Emma", "Olivia", "Ava", "Mia", "Isabella", "Riley", 
+  "Aria", "Zoe", "Charlotte", "Lily", "Layla", "Amelia", "Emily", 
+  "Madelyn", "Aubrey", "Adalyn", "Madison", "Chloe", "Harper", 
+  "Abigail", "Aaliyah", "Avery", "Evelyn", "Kaylee", "Ella", "Ellie", 
+  "Scarlett", "Arianna", "Hailey", "Nora", "Addison", "Brooklyn", 
+  "Hannah", "Mila", "Leah", "Elizabeth", "Sarah", "Eliana", "Mackenzie", 
+  "Peyton", "Maria", "Grace", "Adeline", "Elena", "Anna", "Victoria", 
+  "Camilla", "Lillian", "Natalie", "Jackson", "Aiden", "Lucas", 
+  "Liam", "Noah", "Ethan", "Mason", "Caden", "Oliver", "Elijah", 
+  "Grayson", "Jacob", "Michael", "Benjamin", "Carter", "James", 
+  "Jayden", "Logan", "Alexander", "Caleb", "Ryan", "Luke", "Daniel", 
+  "Jack", "William", "Owen", "Gabriel", "Matthew", "Connor", "Jayce", 
+  "Isaac", "Sebastian", "Henry", "Muhammad", "Cameron", "Wyatt", 
+  "Dylan", "Nathan", "Nicholas", "Julian", "Eli", "Levi", "Isaiah", 
+  "Landon", "David", "Christian", "Andrew", "Brayden", "John", 
+  "Lincoln"
+)
+rownames(X) = fake_first_names
+rownames(X) #setter and getter
+X
+```
+
+Let's pretend "salary" is normally distributed with mean \$50,000 and standard error \$20,000. Let's make up some data
+
+```{r}
+X[, 1] = round(rnorm(n, 50000, 20000))
+X
+#another way to set this feature:
+X[, "salary"] = round(rnorm(n, 50000, 20000))
+X
+```
+
+A quick sidebar about vectors within matrices with row or column names:
+
+```{r}
+salaries = X[, 1] 
+salaries #it's a vector with names
+names(salaries) #access to its names
+names(salaries)[3] = "Adam"
+salaries
+salaries[3]
+salaries["Adam"]
+sort(salaries)
+#how do we sort salaries by name?
+salaries[order(names(salaries))]
+?order #it's like sort, but it returns indices
+rm(salaries)
+```
+
+Are the salary values independent? Yes, or at least we assume so... Hopefully we will get to models in this semester where they are not independent.
+
+We will eventually do visualization, but first let's take a look at a summary of this data:
+
+```{r}
+summary(X[, "salary"])
+```
+
+There are other base functions to know:
+
+```{r}
+mean(X[, "salary"]) #mean should be "average"!!
+sum(X[, "salary"]) / length(X[, "salary"])
+var(X[, "salary"])
+sd(X[, "salary"])
+median(X[, "salary"])
+min(X[, "salary"])
+max(X[, "salary"])
+IQR(X[, "salary"])
+```
+
+There is also the convenient quantile and inverse quantile function
+
+```{r}
+quantile(X[, "salary"], probs = 0.5)
+quantile(X[, "salary"], probs = c(.1, .9))
+inverse_quantile_obj = ecdf(X[, "salary"]) #the "empirical" CDF
+inverse_quantile_obj(50000)
+inverse_quantile_obj(70000)
+inverse_quantile_obj(0)
+inverse_quantile_obj(-10000)
+inverse_quantile_obj(200000)
+```
+
+
+Let's pretend "has_past_unpaid_loan" is benoulli distributed with probability 0.2
+
+```{r}
+X[, "has_past_unpaid_loan"] = rbinom(n, size = 1, prob = 0.2)
+X
+```
+
+Is this a reasonable fabrication of this dataset? No... since salary and not paying back a loan are dependent r.v.'s. But... we will ignore this now.
+
+It would be nice to see a summary of values. Would median and mean be appropriate here? No. For categorical variables, you should "table" them:
+
+```{r}
+table(X[, "has_past_unpaid_loan"])
+```
+
+
+Also, 50\% of people have no crime, 40\% have an infraction, 8\% a misdimeanor and 2\% a felony. Let's try to add this to the matrix. We first need to simulate this. Here's how:
+
+```{r}
+X[, "past_crime_severity"] = sample(
+  c("no crime", "infraction", "misdimeanor", "felony"),
+  size = n,
+  replace = TRUE,
+  prob = c(.50, .40, .08, .02)
+)
+X
+```
+
+Oh no - what happened?? Our matrix went all characters... The matrix type cannot handle numeric and categorical variables simultaneously! It would be nice to keep factor or character information in a matrix but this is not the spec.
+
+Enter the key data type, the "data.frame" - this is the object that is used for modeling in the R ecosystem. It is essentially an upgraded matrix.
+
+```{r}
+X = data.frame(
+  salary = round(rnorm(n, 50000, 20000)),
+  has_past_unpaid_loan = rbinom(n, size = 1, prob = 0.2),
+  past_crime_severity = sample(
+    c("no crime", "infraction", "misdimeanor", "felony"),
+    size = n,
+    replace = TRUE,
+    prob = c(.50, .40, .08, .02)
+  )
+)
+rownames(X) = fake_first_names
+X
+```
+
+RStudio gives us a nicer rendering of the information. You can open it up in a separate tab via:
+
+```{r}
+View(X)
+```
+
+and you can view summaries of each feature and data type of each feature via
+
+```{r}
+summary(X)
+str(X)
+```
+
+Again, summary doesn't work for "has_past_unpaid_loan". We should convert it to factor and try again. Note the "$" operator which is now valid for data.frame objects.
+
+```{r}
+X$has_past_unpaid_loan = factor(X$has_past_unpaid_loan, labels = c("Never", ">=1"))
+head(X) #make sure that worked
+summary(X) #much better now!
+str(X)
+```
+
+Now that we have two categorical variables, we can do a "cross tab":
+
+```{r}
+table(X$has_past_unpaid_loan)
+table(X$past_crime_severity)
+table(X$has_past_unpaid_loan, X$past_crime_severity) / 100
+#to avoid needing the "X$" over and over, use the convenience "with"
+with(X,
+  table(has_past_unpaid_loan, past_crime_severity)
+)
+```
+
+In our training set D, we are missing one final variable, the response! Let's add it and say that 90\% of people are creditworthy i.e. they paid back their loan:
+
+```{r}
+X$paid_back_loan = factor(rbinom(n, size = 1, prob = 0.9), labels = c("No", "Yes"))
+head(X) #make sure that worked
+summary(X) #much better now!
+```
+
+Conceptually - why does this make no sense at all??? y is independent of X --- what happens then? No function f can ever have any predictive / explanatory power! This is just a silly example to show you the data types. We will work with real data soon. Don't worry.
+
+
+
+
+## Continue discussion concerning data frames and the modeling from class
+
+We quickly recreate our data frame from last class:
+
+```{r}
+n = 100
+X = data.frame(
+  salary = round(rnorm(n, 50000, 20000)),
+  has_past_unpaid_loan = rbinom(n, size = 1, prob = 0.2),
+  past_crime_severity = sample(
+    c("no crime", "infraction", "misdimeanor", "felony"),
+    size = n,
+    replace = TRUE,
+    prob = c(.50, .40, .08, .02)
+  )
+)
+row.names(X) = c(
+  "Sophia", "Emma", "Olivia", "Ava", "Mia", "Isabella", "Riley", 
+  "Aria", "Zoe", "Charlotte", "Lily", "Layla", "Amelia", "Emily", 
+  "Madelyn", "Aubrey", "Adalyn", "Madison", "Chloe", "Harper", 
+  "Abigail", "Aaliyah", "Avery", "Evelyn", "Kaylee", "Ella", "Ellie", 
+  "Scarlett", "Arianna", "Hailey", "Nora", "Addison", "Brooklyn", 
+  "Hannah", "Mila", "Leah", "Elizabeth", "Sarah", "Eliana", "Mackenzie", 
+  "Peyton", "Maria", "Grace", "Adeline", "Elena", "Anna", "Victoria", 
+  "Camilla", "Lillian", "Natalie", "Jackson", "Aiden", "Lucas", 
+  "Liam", "Noah", "Ethan", "Mason", "Caden", "Oliver", "Elijah", 
+  "Grayson", "Jacob", "Michael", "Benjamin", "Carter", "James", 
+  "Jayden", "Logan", "Alexander", "Caleb", "Ryan", "Luke", "Daniel", 
+  "Jack", "William", "Owen", "Gabriel", "Matthew", "Connor", "Jayce", 
+  "Isaac", "Sebastian", "Henry", "Muhammad", "Cameron", "Wyatt", 
+  "Dylan", "Nathan", "Nicholas", "Julian", "Eli", "Levi", "Isaiah", 
+  "Landon", "David", "Christian", "Andrew", "Brayden", "John", 
+  "Lincoln"
+)
+summary(x) # Gives summary
+
+```
+
+Remember our cross tab? Now we can get fancier using our new libary skills. Any Stata fans out there?
+
+```{r}
+pacman::p_load(gmodels)
+CrossTable(X$has_past_unpaid_loan, X$past_crime_severity, chisq = TRUE)
+```
+
+
+And add a new variable, the response to the data frame:
+
+```{r}
+X$paid_back_loan = factor(rbinom(n, size = 1, prob = 0.9), labels = c("No", "Yes"))
+```
+
+Note that our matrix is now no longer just $X$; it includes $y$. I could make a renamed copy, but I want to show off dropping this column and create a new object that's both features and response column-binded together:
+
+```{r}
+y = X$paid_back_loan
+X$paid_back_loan = NULL #drop column
+Xy = cbind(X, y) #an aside: what do you think the "rbind" function does?
+head(Xy) #make sure that worked
+summary(Xy) #much better now!
+#Note: Xy = X; rm(X) would've been easier
+```
+
+I prefer calling the full training set ${X, y}$ a data frame called $Xy$. 
+
+
+The object $X$ is now extraneous, so we should clean up our workspace now.
+
+```{r}
+rm(list = setdiff(ls(), "Xy"))
+```
+
+
+## The Null Model
+
+```{r}
+#There's no standard R function for sample mode!!!
+sample_mode = function(data){
+  mode_name = names(sort(-table(data)))[1]
+  if (class(data) == "factor"){
+    factor(mode_name, levels = levels(data))
+  } else if (class(data) == "numeric"){
+    as.numeric(mode_name)
+  } else if (class(data) == "integer"){
+    as.integer(mode_name)
+  } else {
+    mode_name
+  }
+}
+
+g0 = function(){
+  sample_mode(Xy$y) #return mode regardless of x
+} 
+
+g0()
+```
+
+
+## The Threshold Model
+
+Let's compute the threshold model and see what happens. Here's an inefficent but quite pedagogical way to do this:
+
+```{r}
+n = nrow(Xy)
+num_errors_by_parameter = matrix(NA, nrow = n, ncol = 2)
+colnames(num_errors_by_parameter) = c("threshold_param", "num_errors")
+y_logical = Xy$y == "Yes"
+for (i in 1 : n){
+  threshold = Xy$salary[i]
+  num_errors = sum((Xy$salary > threshold) != y_logical)
+  num_errors_by_parameter[i, ] = c(threshold, num_errors)
+}
+num_errors_by_parameter
+
+#look at all thresholds in order
+num_errors_by_parameter[order(num_errors_by_parameter[, "num_errors"]), ]
+
+#now grab the smallest num errors
+best_row = order(num_errors_by_parameter[, "num_errors"])[1]
+x_star = c(num_errors_by_parameter[best_row, "threshold_param"], use.names = FALSE)
+x_star
+```
+
+Let's program `g`, the model that is shipped as the prediction function for future `x_*`
+
+```{r}
+g = function(x){
+  ifelse(x > x_star, 1, 0)
+} 
+
+g(15000)
+```
+
+
+## The Perceptron
+
+Time for some new data first... we are bored of the fabricated creditworthiness data.
+
+```{r}
+rm(list = ls())
+Xy = na.omit(MASS::biopsy) #The "breast cancer" data
+?MASS::biopsy
+head(Xy)
+X = Xy[, 2 : 10] #V1, V2, ..., V9
+head(X)
+y_binary = as.numeric(Xy$class == "malignant")
+table(y_binary)
+```
+
+First question. Let $\mathcal{H}$ be the set $\{0, 1\}$ meaning $g = 0$ or $g = 1$. What are the error rates then on $\mathbb{D}$? 
+
+```{r}
+#If always 0, all the 1's are errors
+239 / (444 + 239)
+#If always 1, all the 0's are errors
+444 / (444 + 239)
+
+g0 = function(){
+  sample_mode(y_binary) #return mode regardless of x's
+} 
+
+g0()
+```
+
+If your $g$ can't beat that, either your features $x_1, \ldots, x_p$ are terrible, and/or $\mathcal{H}$ was a terrible choice and/or $\mathcal{A}$ can't pull its weight.
+
+Okay... back to the "perceptron learning algorithm".
+
+Let's do so for one dimension - just "V1" in the breast cancer data. You will do an example with more features for the lab.
+
+```{r}
+# y_binary = ifelse(y_binary == 1, 0, 1)
+MAX_ITER = 1000
+w_vec = rep(0, 2) #intialize a 2-dim vector
+
+X1 = as.matrix(cbind(1, X[, 1, drop = FALSE]))
+
+for (iter in 1 : MAX_ITER){  
+  for (i in 1 : nrow(X1)){
+    x_i = X1[i, ]
+    yhat_i = ifelse(sum(x_i * w_vec) > 0, 1, 0)
+    y_i = y_binary[i]
+    w_vec[1] = w_vec[1] + (y_i - yhat_i) * x_i[1]
+    w_vec[2] = w_vec[2] + (y_i - yhat_i) * x_i[2]
+  }
+}
+w_vec
+```
+
+What is our error rate?
+
+```{r}
+yhat = ifelse(X1 %*% w_vec > 0, 1, 0)
+sum(y_binary != yhat) / length(y_binary)
+```
+
+Looks like the perceptron fit to just the first feature beat the null model (at least on the data in $\mathbb{D}$). Is this expected? Yes if the first feature is at all predictive of `y`.
+
+
+
+## Support Vector Machines (SVM)
+
+You will code a basic SVM for homework. Here we use the `e1071` library.
+
+```{r}
+pacman::p_load(e1071)
+```
+
+We make a simple dataset first.
+
+```{r}
+Xy_simple = data.frame(
+ response = factor(c(0, 0, 0, 1, 1, 1)), #nominal
+ first_feature = c(1, 1, 2, 3, 3, 4),    #continuous
+ second_feature = c(1, 2, 1, 3, 4, 3)    #continuous
+)
+```
+
+We haven't spoken about visualization yet, but it is important we do some of it now. First we load the visualization library we're going to use:
+
+```{r}
+pacman::p_load(ggplot2)
+```
+
+And let's plot the data:
+
+```{r}
+simple_viz_obj = ggplot(Xy_simple, aes(x = first_feature, y = second_feature, color = response)) + 
+  geom_point(size = 5)
+simple_viz_obj
+```
+
+Now we fit a linear SVM. Since it is linearly separable, we can make $\lambda = 0$. Since the package doesn't allow zero, we make it trivially small. 
+
+```{r}
+Xy_simple_feature_matrix = as.matrix(Xy_simple[, 2 : 3])
+lambda = 1e-9
+n = nrow(Xy_simple_feature_matrix)
+svm_model = svm(Xy_simple_feature_matrix, Xy_simple$response, kernel = "linear", cost = (2 * n * lambda)^-1, scale = FALSE)
+```
+
+The model object can be queried to find the "support vectors" i.e. the observations that lie on the wedge. Let's visualize them too.
+
+```{r}
+svm_model$index
+Xy_simple$is_support_vector = rep("no", n)
+Xy_simple$is_support_vector[svm_model$index] = "yes"
+simple_viz_obj = ggplot(Xy_simple, aes(x = first_feature, y = second_feature, color = response, shape = is_support_vector)) + 
+  geom_point(size = 5)
+simple_viz_obj
+```
+
+
+Now we calculate the weight vector. This is technical and not covered in the class yet (or maybe never):
+
+```{r}
+w_vec_simple_svm = c(
+  svm_model$rho, #the b term
+  -t(svm_model$coefs) %*% Xy_simple_feature_matrix[svm_model$index, ] # the other terms
+)
+w_vec_simple_svm
+w_norm = sqrt(sum(w_vec_simple_svm^2))
+w_norm
+```
+
+We can also plot it. We have to convert from Hesse Normal form back into point-intercept form. Note that $b$ is the first entry of the `w_vec_simple_svm` vector
+
+```{r}
+simple_svm_line = geom_abline(
+    intercept = -w_vec_simple_svm[1] / w_vec_simple_svm[3], 
+    slope = -w_vec_simple_svm[2] / w_vec_simple_svm[3], 
+    color = "purple")
+simple_viz_obj + simple_svm_line
+```
+
+We can also plot the wedge by plotting the top line (where b is augmented by 1) and the bottom line (where b is diminished by 1).
+
+```{r}
+simple_svm_top_line = geom_abline(
+    intercept = -(w_vec_simple_svm[1] + 1) / w_vec_simple_svm[3], 
+    slope = -w_vec_simple_svm[2] / w_vec_simple_svm[3], 
+    color = "yellow")
+simple_svm_bottom_line = geom_abline(
+    intercept = -(w_vec_simple_svm[1] - 1) / w_vec_simple_svm[3], 
+    slope = -w_vec_simple_svm[2] / w_vec_simple_svm[3], 
+    color = "yellow")
+simple_viz_obj + simple_svm_line + simple_svm_top_line + simple_svm_bottom_line
+```
+
+
+
+To understand the hyperparameter, let's introduce another data point so the training data is no longer linearly separable.
+
+```{r}
+Xy_simple = rbind(Xy_simple, c(0, 3.2, 3.2))
+```
+
+and plot it:
+
+```{r}
+simple_viz_obj = ggplot(Xy_simple, aes(x = first_feature, y = second_feature, color = response)) + 
+  geom_point(size = 5)
+simple_viz_obj
+```
+
+Let's try SVM at different $\lambda$ values.
+
+```{r}
+lambda = 0.001#0.001 #1.3
+
+Xy_simple_feature_matrix = as.matrix(Xy_simple[, 2 : 3])
+n = nrow(Xy_simple_feature_matrix)
+svm_model = svm(Xy_simple_feature_matrix, Xy_simple$response, kernel = "linear", cost = (2 * n * lambda)^-1, scale = FALSE)
+summary(svm_model)
+w_vec_simple_svm = c(
+  svm_model$rho, #the b term
+  -t(svm_model$coefs) %*% Xy_simple_feature_matrix[svm_model$index, ] # the other terms
+)
+sqrt(sum(w_vec_simple_svm^2))
+
+Xy_simple$is_support_vector = rep("no", n)
+Xy_simple$is_support_vector[svm_model$index] = "yes"
+simple_viz_obj = ggplot(Xy_simple, aes(x = first_feature, y = second_feature, color = response, shape = is_support_vector)) + 
+  geom_point(size = 5)
+
+simple_svm_line = geom_abline(
+    intercept = -w_vec_simple_svm[1] / w_vec_simple_svm[3], 
+    slope = -w_vec_simple_svm[2] / w_vec_simple_svm[3], 
+    color = "purple")
+simple_svm_top_line = geom_abline(
+    intercept = -(w_vec_simple_svm[1] + 1) / w_vec_simple_svm[3], 
+    slope = -w_vec_simple_svm[2] / w_vec_simple_svm[3], 
+    color = "yellow")
+simple_svm_bottom_line = geom_abline(
+    intercept = -(w_vec_simple_svm[1] - 1) / w_vec_simple_svm[3], 
+    slope = -w_vec_simple_svm[2] / w_vec_simple_svm[3], 
+    color = "yellow")
+simple_viz_obj + simple_svm_line + simple_svm_top_line + simple_svm_bottom_line
+```
+
+What lesson did we learn here? This hyperparameter really matters! (In the method's documentation note, it says "Parameters of SVM-models usually must be tuned to yield sensible results!") And it is not clear to me what the "wedge" is anymore when there isn't separability, nor what the support vectors are, and nor how `cost` parameter has much to do with the lambda from the notes. What is clear is that we need to figure out a way to deal with selecting the "right" hyperparameter value automatically. So far neither the perceptron nor the SVM is an algorithm for binary classification that comes without flaws.
+
+
+## Nearest Neighbor algorithm
+
+Load up the breast cancer data set again.
+
+```{r}
+Xy = na.omit(MASS::biopsy) #The "breast cancer" data with all observations with missing values dropped
+X = Xy[, 2 : 10] #V1, V2, ..., V9
+y_binary = as.numeric(Xy$class == "malignant")
+```
+
+Let's say we want to build a nearest neighbor model with the first covariate only. We are then looking for the label (response) of the closest x_1. Here is a simple function that does it:
+
+```{r}
+nn_function = function(x_star){
+  y_binary[which.min((X[, 1] - x_star)^2)]
+}
+nn_function(7.8)
+nn_function(5.2)
+```
+
+Why is this silly for this dataset?
+
+```{r}
+str(X)
+```
+
+The features are not truly continuous. Would it make sense in higher dimensions? Your homework...
+
+Has this been coded before? Definitely...
+
+```{r}
+pacman::p_load(class)
+?knn
+```
+
+We can fit a knn model *and* predict in one shot via:
+
+```{r}
+y_hat = knn(X, c(4, 2, 1, 1, 2, 1, 2, 1, 1), y_binary, k = 1)
+y_hat
+```
+
+Why is build model and predict in one shot natural in knn?
+
+Now for an interesting exercise that will setup future classes:
+
+```{r}
+y_hat = knn(X, X, y_binary, k = 1)
+y_hat
+all.equal(y_hat, factor(y_binary))
+```
+
+No errors! Can this be a good model? No... "something" must be wrong! It is too good to be true.
+
+Something is wrong. This is the first example of "overfitting". We will explore this later in depth (it is one of the core concepts of this course).
+
+Let's see $K > 1$
+
+
+```{r}
+y_hat = knn(X, X, y_binary, k = 10)
+y_hat
+all.equal(y_hat, factor(y_binary))
+```
+
+Why would there be difference now between predictions and the actual data?
+
+```{r}
+rm(list = ls())
+```
+
+
+
+## Simple Linear Regression (p = 1)
+
+To understand what the algorithm is doing - best linear fit by minimizing the squared errors, we can draw a picture. First let's make up some very simple training data $\mathbb{D}$.
+
+```{r}
+set.seed(1984)
+n = 20
+x = runif(n)
+beta_0 = 3
+beta_1 = -2
+h_star = beta_0 + beta_1 * x
+epsilons = rnorm(n, mean = 0, sd = 0.33)
+y = h_star + epsilons 
+```
+
+And let's plot the data:
+
+
+```{r}
+pacman::p_load(ggplot2)
+simple_df = data.frame(x = x, y = y)
+simple_viz_obj = ggplot(simple_df, aes(x, y)) + 
+  geom_point(size = 2)
+simple_viz_obj
+```
+
+And its true $h^*$ line:
+
+```{r}
+true_hstar_line = geom_abline(intercept = beta_0, slope = beta_1, color = "green")
+simple_viz_obj + true_hstar_line
+```
+
+Now let's calculate the simple least squares coefficients:
+
+```{r}
+r = cor(x, y)
+s_x = sd(x)
+s_y = sd(y)
+ybar = mean(y)
+xbar = mean(x)
+
+b_1 = r * s_y / s_x
+b_0 = ybar - b_1 * xbar
+b_0
+b_1
+```
+
+Note how $b_0$ and $b_1$ are not exactly the same as $\beta_0$ and $\beta_1$. Why?
+
+And we can plot it:
+
+
+```{r}
+simple_ls_regression_line = geom_abline(intercept = b_0, slope = b_1, color = "red")
+simple_viz_obj + simple_ls_regression_line + true_hstar_line
+```
+
+Review of the modeling framework:
+
+The difference between the green line and red line is the "estimation error". The difference between the green line and the points is a combination of error due to ignorance and error due to misspecification of $f$ as a straight line. In most real-world applications, estimation error is usually small relative to the other two. In the era of "big data", $n$ is usually big so estimation error is pretty small.
+
+Recall that the noise (epsilons) are the difference between the data and the green line:
+
+```{r}
+simple_df$hstar = beta_0 + beta_1 * simple_df$x
+simple_viz_obj = ggplot(simple_df, aes(x, y)) + 
+  geom_point(size = 2)
+epsilon_line_segments = geom_segment(aes(xend = x, yend = hstar), position = position_nudge(x = 0.002))
+simple_viz_obj + epsilon_line_segments + true_hstar_line
+```
+
+And that the residuals (e's) are the difference between the measurements of the response in the actual data and the green line:
+
+```{r}
+simple_df$gs = b_0 + b_1 * simple_df$x
+simple_viz_obj = ggplot(simple_df, aes(x, y)) + 
+  geom_point(size = 2)
+e_line_segments = geom_segment(aes(xend = x, yend = gs), color = "purple")
+simple_viz_obj + simple_ls_regression_line + e_line_segments
+```
+
+Examining both at the same time:
+
+```{r}
+simple_viz_obj + simple_ls_regression_line + true_hstar_line + e_line_segments + epsilon_line_segments
+```
+

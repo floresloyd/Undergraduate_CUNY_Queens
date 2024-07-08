@@ -1,0 +1,197 @@
+\documentclass[12pt]{article}
+
+\include{preamble}
+\usepackage{xcolor}
+\usepackage{graphicx}
+
+
+\newtoggle{professormode}
+% \toggletrue{professormode} %STUDENTS: DELETE or COMMENT this line
+
+
+
+\title{MATH 342W / 650.4 Spring \the\year ~Homework \#3}
+
+\author{Loyd Flores} %STUDENTS: write your name here
+
+\iftoggle{professormode}{
+\date{Due 11:59PM March 17 \\ \vspace{0.5cm} \small (this document last updated \currenttime~on \today)}
+}
+
+\renewcommand{\abstractname}{Instructions and Philosophy}
+
+\begin{document}
+\maketitle
+
+\iftoggle{professormode}{
+\begin{abstract}
+The path to success in this class is to do many problems. Unlike other courses, exclusively doing reading(s) will not help. Coming to lecture is akin to watching workout videos; thinking about and solving problems on your own is the actual ``working out.''  Feel free to \qu{work out} with others; \textbf{I want you to work on this in groups.}
+
+Reading is still \textit{required}. You should be googling and reading about all the concepts introduced in class online. This is your responsibility to supplement in-class with your own readings.
+
+The problems below are color coded: \ingreen{green} problems are considered \textit{easy} and marked \qu{[easy]}; \inorange{yellow} problems are considered \textit{intermediate} and marked \qu{[harder]}, \inred{red} problems are considered \textit{difficult} and marked \qu{[difficult]} and \inpurple{purple} problems are extra credit. The \textit{easy} problems are intended to be ``giveaways'' if you went to class. Do as much as you can of the others; I expect you to at least attempt the \textit{difficult} problems. 
+
+This homework is worth 100 points but the point distribution will not be determined until after the due date. See syllabus for the policy on late homework.
+
+Up to 7 points are given as a bonus if the homework is typed using \LaTeX. Links to instaling \LaTeX~and program for compiling \LaTeX~is found on the syllabus. You are encouraged to use \url{overleaf.com}. If you are handing in homework this way, read the comments in the code; there are two lines to comment out and you should replace my name with yours and write your section. The easiest way to use overleaf is to copy the raw text from hwxx.tex and preamble.tex into two new overleaf tex files with the same name. If you are asked to make drawings, you can take a picture of your handwritten drawing and insert them as figures or leave space using the \qu{$\backslash$vspace} command and draw them in after printing or attach them stapled.
+
+The document is available with spaces for you to write your answers. If not using \LaTeX, print this document and write in your answers. I do not accept homeworks which are \textit{not} on this printout. Keep this first page printed for your records.
+
+\end{abstract}
+
+\thispagestyle{empty}
+\vspace{1cm}
+NAME: \line(1,0){380}
+\clearpage
+}
+
+\problem{These are questions about Silver's book, chapters 3-6.  For all parts in this question, answer using notation from class (i.e. $t ,f, g, h^*, \delta, \epsilon, e, t, z_1, \ldots, z_t, \mathbb{D}, \mathcal{H}, \mathcal{A}, \mathcal{X}, \mathcal{Y}, X, y, n, p, x_{\cdot 1}, \ldots, x_{\cdot p}$, $x_{1 \cdot}, \ldots, x_{n \cdot}$, etc.} % and also we now have $f_{pr}, h^*_{pr}, g_{pr}, p_{th}$, etc from probabilistic classification as well as different types of validation schemes)
+
+\begin{enumerate}
+
+\hardsubproblem{Chapter 4 is all about predicting weather. Broadly speaking, what is the problem with weather predictions? Make sure you use the framework and notation from class. This is not an easy question and we will discuss in class. Do your best.}\spc{6} \\
+The world in itself is very complex. There are too many reasons for why things occur, too many variables to consider, we can never completely know what goes on in a phenomena, the best we can do is approximate. Weather is a different beast. It is a dynamic system where the tiniest things could drastically alter the outcome. This is one reason why predicting the weather is hard. There exists limitation on how much we  understand the world. Due to it's complexity it makes it even harder to collect the right data to input into our models. For example, even thermometers make mistakes. As stated in Silver's book, they may even be off just in the third or fourth decimal place. According to the principles of chaos theory and the nature of weather prediction as a dynamic system implies that fundamentally there is already error occurring and piling up. Our prediction from the start is immediately wrong. In the context of our lectures there exists such \( z_1, z_2, \ldots, z_n \), which are real drivers of a phenomena. We may never even grasp the \( z's \) that's why the best we can do is approximate them with \( x's \), which again makes our predictions wrong. Returning back on the idea of Weather being a dynamic system, that in itself also poses another problem. The features we use to predict today may not be of significance in the future. We may find other reasons as to why the weather changes thus debunking methodologies we used in the past. Weather is not stationary and a multitude of factors may contribute to the change of weather and temperature. Lastly, despite computing power improving exponentially in recent decades it still isn't enough. Our ability to compute the weather has long lagged behind our theoretical understanding of it. We know which equations to solve and roughly what the answers are , but we aren't fast enough to calculate tehem for every molecule in the earth's atmosphere, again because the world is too complex. \\
+
+\easysubproblem{Why does the weatherman lie about the chance of rain? And where should you go if you want honest forecasts?}\spc{2} \\ 
+According to the findings of Eric Floehr, That statistical reality of accuracy isn't the governing paradigm when it comes to commercial weather forecasting. In simpler terms commercial weather providers have less incentive to give the most accurate predictions and trade-off some accuracy to fuel their personal agendas. Most commercial weather forecasts predict more precipitation than what actually occurs. Meteorologists call this "wet bias". For example if the prediction comes out to be a 5\%, they instead inflate it to be 20\%. By doing this commercial weather forecasts gain more profit because they "add value" by subtracting accuracy. According to Floehr if you want the most accurate forecasts you must result to the source, the government's data. All the commercial providers source their data from here before aggregating their own biases onto the data. The further you are from source the less accurate it becomes.
+
+\hardsubproblem{Chapter 5 is all about predicting earthquakes. Broadly speaking, what is the problem with earthquake predictions? It is \textit{not} the same as the problem of predicting weather. Read page 162 a few times. Make sure you use the framework and notation from class.}\spc{5} \\ 
+
+Both weather and earthquakes are dynamic systems. There are a multitude of factors that could affect these natural phenomena from occurring and a slight mishap in calculation could render our model to occur more error. The first major difference is that meteorologists are approximating the \( z's \) more accurately. This roots from the better understanding of meteorologists on weather's phenomena or dynamic system as to seismologists to the phenomena of earthquakes. For example they have a strong fundamental understanding of what causes tornadoes and how they dissipate and seismologists are still trying to find out for sure what happens before or after an earthquake. Therefore models predicting earthquakes will incur larger \( \delta \), or error due to ignorance, there are just more things that seismologists are unaware of. A possible cause could be that weather has a richer dataset \( \mathbb{D} \) available since earthquakes happen less frequently. A lot of earthquakes occur but they all vary in strength. Weaker ones happen more frequently and some even go unnoticed or unregistered while stronger ones happen so infrequently that we can't even begin to pick up the patterns. There is an obvious difference in the availability of data and understanding of phenomena. Secondly weather has a larger array of out of sample validation techniques that it can rely on. Persistence, climatology, and larger amounts of data is available for weather meanwhile earthquakes can only be validated once they occur. In the terms of our lecture, weather has better validation techniques and is even able to split its dataset \( \mathbb{D} \)  into  \( D_{\text{test}} \) and \( D_{\text{train}} \)
+, while earthquakes don't really have the same luxury. Earthquake prediction desperately seeks signal while weather is gradually developing their approximations to \( f \). \\  \\
+\easysubproblem{Silver has quite a whimsical explanation of overfitting on page 163 but it is really educational! What is the nonsense predictor in the model he describes?}\spc{2} \\ 
+
+As discussed in Page 163 most economists rely on their judgement to some degree when making a forecast rather than just taking the output of a statistical model as is. Which could be simplified using the a quote from \textit{George Box} which states: "All models are wrong but some are useful." It is then necessary that judgemental adjustments are made to the statistical model to make them better which was proven in the study of \textit{Stephen K. McNess}, adjusted models performed 15\% better because relying solely on statistical methods and computational resources will not account for the lack of theoretical understanding about a phenomena. What he was discussing as the non-sense predictor is when too much judgment is introduced it turns into bias. The amount of bias that could be incurred depends on the influence of reputation. The less known you are the less you have to lose by taking a big risk when predicting. Conversely if you have a good reputation you might be reluctant to step too far out of the line even if data demands it. Either of these concerns potentially distracts you from the goal of making the most honest predictions. The data collected from the Survey of Professional Forecasters proves that anonymous predictions always performed better because there are less biases and personal interests are added onto the model due to anonymity being lower stakes.
+
+\easysubproblem{John von Neumann was credited with saying that \qu{with four parameters I can fit an elephant and with five I can make him wiggle his trunk}. What did he mean by that and what is the message to you, the budding data scientist? }\spc{5} \\ 
+
+Over fitting is a big topic in this part of the text. It occurs when a model captures the noise rather than the underlying signal, resulting in a model that performs well on the training data but poorly on new, unseen data. In the context of our class an over-fit model understands the variability of the data it is fed which in the class' context means the model has an \( R^2\) which is closer to one, in the context of this text it was 85\% . Although these in-sample metrics are amazing they do not tell the entire truth. If anything they are deceiving you. The model fails to generalize new or unseen data. The quote \textbf{"With four parameters I can fit an elephant"} implies that the possibilities for an over fit model are endless even with a small feature count of 4. It emphasizes this even more by stating \textbf{"With five I can make him wiggle his trunk"} that the addition of more noise could drastically increase the complexity of our model. This implies that our model is so delusional that because it fully understood the noise and its complexity which places us further away from the actual phenomena we are interested in.  \\ \\ \\ \\
+
+\hardsubproblem{Chapter 6 is all about predicting unemployment, an index of macroeconomic performance of a country. Broadly speaking, what is the problem with unemployment predictions? It is \textit{not} the same as the problem of predicting weather or earthquakes. Make sure you use the framework and notation from class.}\spc{6} \\ 
+
+Predicting unemployment is different from weather or earthquakes because it has even less data available while being more complex. The nature of employment and economy is a different level of complex, there are so many indicators that you could possibly consider. It also requires a really complex model to understand the large variability in this field. In the context of the lectures the problem with unemployment predictions is that we are unable to properly identify the proper approximation \(x\) to the \(z's\). There are so many interconnected variables from small consumer behavior to large global movements of the market.  All these indicators are dynamic and we can't keep track of them which increases \( \delta \) that our model is incurring or the error due to ignorance. Economic models also require a lot more subjective judgement allowing over-fitting wreak havoc easily. With the complex nature of the economy, it is harder to approximate \(f\), increasing our misspecification error due to the limited nature of existing models. Overall the problem is just completely different in complexity. It stems from the unique and complex nature of economic systems, which pose challenges beyond those encountered in weather or earthquakes.
+ 
+
+\extracreditsubproblem{Many times in this chapter Silver says something on the order of \qu{you need to have theories about how things function in order to make good predictions.} Do you agree? Discuss.}\spc{13} \\ 
+I agree with this statement. To solve a problem you must first understand the problem. For example you may memorize all the mathematical formulas in this world but if you are unable to understand the problem the knowledge you posses is rendered unusable due to the fact that you are unable to apply it. The same could be said in the context of Data Science and Machine Learning. How will you solve problems if you don't know how they fundamentally occur? The lack of theory presents a worse approximation of \(x's\) to \(z's\). There is also room for oversimplifying the problem which leads to a model that also fails to approximate \(f\). For someone to produce a model that works and is useful they must first understand what they are trying to achieve, this is done by understanding the theories that govern the desired target. Secondly, theory in the domains of machine learning and data science are also necessary to be able to interpret and utilize the available data. What is a science textbook to a dogmatic and religious fundamentalist, nothing because it is virtually blasphemous garbage to them.
+
+
+\end{enumerate}
+\newpage
+
+
+\problem{These are questions related to the concept of orthogonal projection, QR decomposition and its relationship with least squares linear modeling.} 
+
+\begin{enumerate}
+
+\easysubproblem{Let $\H$ be the orthogonal projection onto $\colsp{\X}$ where $\X$ is a $n \times (p+1)$ matrix with all columns linearly independent from each other. What is $\rank{\H}$?}\spc{0.5} \\
+
+If matrix \( X\) is size \( n * (p + 1)\) then rank[\(H\)] = \(p + 1\) should also hold because the rank of \(H\) is purely determined by the number of linearly independent columns in \(X\) which is \(p + 1\). The dimension of the column space of \(X\) is dictated by \(n\), thus rank[\(H\)] = \(p + 1\)
+
+
+\easysubproblem{Simplify $\H\X$ by substituting for $\H$.}\spc{0.5} \\ 
+= \textcolor{red}{\(H\)}\(X\) = \(X\), this could also be written as : \\
+= \textcolor{red}{\(H\)}\(X\) = \textcolor{red}{\( X(X^T X)^{-1} X^T\)} X = X\\
+= \textcolor{red}{\(H\)}\(X\) = \(X * I\) = X
+
+
+\intermediatesubproblem{What does your answer from the previous question mean conceptually?}\spc{2} \\ 
+
+The previous problem indicates that the effect of the \textbf{orthogonal projection matrix} \(H\) on matrix \(X\) is equivalent to simply leaving \(X\) unchanged. It aligns with the fundamental understanding of orthogonal projection, where vectors projected onto a subspace remain unchanged if they already lie within that subspace.
+
+\hardsubproblem{Let $\X'$ be the matrix of $\X$ whose columns are in reverse order meaning that $\X = [ \onevec_n~\vdots~\x_{\cdot 1}~\vdots~ \ldots~\vdots~ \x_{\cdot p} ]$ and $\X' = [\x_{\cdot p}~\vdots~ \ldots~\vdots~\x_{\cdot 1}~\vdots~\onevec_n]$. Show that the projection matrix that projects onto $\colsp{X}$ is the same exact projection matrix that projects onto $\colsp{X'}$.}\spc{4} \\
+\includegraphics[width=0.4\textwidth]{2d.png}
+
+% \hardsubproblem{[MA] Generalize the previous problem by proving that orthogonal projection matrices that project onto any specific subspace are \emph{unique}.}\spc{10}
+
+% \hardsubproblem{[MA] Prove that if a square matrix is both symmetric and idempotent then it must be an orthogonal projection matrix.}\spc{10}
+
+\easysubproblem{Prove that $I_n$ is an orthogonal projection matrix $\forall n$.}\spc{3} \\
+For something to be an orthogonal projection matrix it must satisfy two conditions, \textbf{Symmetry} and \textbf{Impotence}. In the case of \(I_n\) by definition it is the identity matrix meaning that all diagonal elements are 1 and the rest are 0's. Since it is the identity it has to be square. Multiplying such matrix by itself you obtain yourself or \(I_n^{2}\) = \(I_n\) which satisfy the condition of \textbf{symmetry}. Another implication of \(I_n\) being square is that if transpose or swap the rows and columns it does not change the structure or \(I_n^{T}\) = \(I_n\) satisfying the second condition of \textbf{idempotency}. \\ \\ \\
+
+
+\easysubproblem{What subspace does $I_n$ project onto?}\spc{3} \\
+The identity matrix \(I_n\) projects onto the entire subspace of \( \mathbb{R}^{2} \) because as the identity matrix it preserves all vectors in \( \mathbb{R}^{2} \) without changing the direction or magnitude of any vector \(v\). When we apply the projection operation using \(I_n\) we get the same vector back or \(I_n\)v = v. \\
+
+\easysubproblem{Consider least squares linear regression using a design matrix $X$ with rank $p + 1$. What are the degrees of freedom in the resulting model? What does this mean?}\spc{3} \\ 
+If rank[\(X\)] = \(p+1\), its degrees of freedom would also be p+1. The Degrees of freedom just imply the number of linearly independent columns we have that can capture the variability in the response variable. In simpler terms we have more independent pieces of information to explain our target hence why "degrees of freedom capture variability."
+
+
+\easysubproblem{If you are orthogonally projecting the vector $\y$ onto the column space of $X$ which is of rank $p + 1$, derive the formula for $\proj{\colsp{X}}{\y}$. Is this the same as in OLS?}\spc{8} \\ 
+To project \(y\) onto the colspc[\(X\)], the projection matrix could be denoted as \(H\) = \(X (X^T X)^{-1} X^T\). Substituting that we get: \\
+= \(Proj_{colsp[x]} (y)\) =  \((X (X^T X)^{-1} X^T)y \) \\ 
+
+In OLS the goal is the find the coefficients \( \beta \) that minimize the residual sum of squares,
+\( \beta \) is denoted by : \\
+\( \beta\) = \((X^T X)^{-1} X^T)y \) \\
+
+We can substitute the OLS solution by plugging in \( \beta \) : \\
+\(Proj_{colsp[x]} (y)\) =  \((X (X^T X)^{-1} X^T)y \) = X\( \beta \). Therefore in the context of OLS regression, the projection of \(y\) into \(colsp[x]\) is the same as the predicted values of y from the regression model.
+ 
+\hardsubproblem{We saw that the perceptron is an \textit{iterative algorithm}. This means that it goes through multiple iterations in order to converge to a closer and closer $\bv{w}$. Why not do the same with linear least squares regression? Consider the following. Regress $\y$ using $\X$ to get $\yhat$. This generates residuals $\e$ (the leftover piece of $\y$ that wasn't explained by the regression's fit, $\yhat$). Now try again! Regress $\e$ using $\X$ and then get new residuals $\e_{new}$. Would $\e_{new}$ be closer to $\bv{0}_n$ than the first $\e$? That is, wouldn't this yield a better model on iteration \#2? Yes/no and explain.}\spc{10} \\
+The second regression on the residuals may not necessarily result in \( \hat{e}_{new}\) that is closer to \(0_n\) than the initial residual \(e\) because the initial regression already captures the variation in y explained by the predictors in \(X\). The remaining variation captured by the residuals may not be effectively modeled by the same predictors in \(X\), since we are using the same input matrix \(X\) for the succeeding iterations. Thus implying that iterative regression on the residuals may not significantly improve the modal and may not converge to a better solution compared to iterative method that perception uses that it gradually fixes the fit of the line.
+
+
+\intermediatesubproblem{Prove that $\Q^\top = \Q^{-1}$ where $\Q$ is an orthonormal matrix such that $\colsp{\Q} = \colsp{\X}$ and $\Q$ and $\X$ are both matrices $\in \reals^{n \times (p+1)}$ and $n = p+1$ in this case to ensure the inverse is defined. Hint: this is purely a linear algebra exercise and it's a one-liner.}\spc{2} \\ 
+Since \(Q\) is an \textbf{orthonormal  matrix} its transpose \(Q^T\) is also its inverse. This is the fundamental idea of orthonormal  matrices that they have orthogonal columns and unit length, when transposed they maintain their orthogonality and unit length thus proving
+\textbf{\(Q^{-1}\) = \(Q^T\)}
+
+
+\easysubproblem{Prove that the least squares projection $\H = \XXtXinvXt = \Q\Q^\top$. Justify each step.}\spc{3} \\ 
+\includegraphics[width=0.5\textwidth]{2k.png} \\ \\ 
+
+
+% \hardsubproblem{[MA] This problem is independent of the others. Let $H$ be an orthogonal projection matrix. Prove that $\rank{\H} =\tr{\H}$. Hint: you will need to use facts about eigenvalues and the eigendecomposition of projection matrices.}\spc{12}
+
+\intermediatesubproblem{Prove that an orthogonal projection onto the $\colsp{\Q}$ is the same as the sum of the projections onto each column of $\Q$.}\spc{9} \\
+\includegraphics[width=0.4\textwidth]{2i.png}
+
+\easysubproblem{Explain why adding a new column to $\X$ results in no change in the SST remaining the same.}\spc{1} \\ 
+SST or Sum squared total is a measure of the total variability present in the dependent variable \(y\) without considering any predictors. This is crucial because it provides a baseline understanding of how much the observed values of \(y\) deviate from their mean. SST is derived from SST =  \( \sum\limits_{i=1}^n (y_i - \bar{y})^2 \) adding more X's or feature columns won't really affect the variability of y. 
+
+\intermediatesubproblem{Prove that adding a new column to $\X$ results in SSR increasing.}\spc{4} \\
+SSR or Sum squared Residual represents the sum of the squared difference between the predicted values of the dependent variable \( \hat{y}\) and the mean of the dependent variable \(\bar{y}\) or SSR = \(\sum\limits_{i=1}^n\)(\(\hat{y} - \bar{y})^2\). When we add a new column \(X_{new}\) to the predictor matrix \(X\) it means that we're introducing a new predictor or feature. When we fit a linear regression model with the new predictor included. When the model attempts to explain more of the variability in the dependent variable incorporating all the features in \(X\) including \(X_{new}\) the values of \( \hat{y}\) will probably change and will be closer to 0 therefore changing the value of SSR because the larger difference from \( \hat{y} \) - \( \bar{y}\) will result into a larger SSR when squared. \\ \\
+
+\intermediatesubproblem{What is overfitting? Use what you learned in this problem to frame your answer.}\spc{4} \\
+Overfitting occurs when our model oversimplifies a problem by fully understanding the patterns and noise found in the data it was trained on. It then fails to generalize on new and or unseen data. If I am using concepts from the previous questions, if we keep adding garbage features our model will become more complex and we will have a better fit line that includes the garbage. SSR will keep increasing which is a strong indicator of overfitting.
+
+\easysubproblem{Why are \qu{in-sample} error metrics (e.g. $R^2$, SSE, $s_e$) dishonest? Note: I'm leaving out RMSE as RMSE attempts to be honest by increasing as $p$ increases due to the denominator. I've chosen to use standard error of the residuals as the error metric of choice going forward.}\spc{5} \\ 
+In sample error metrics are dishonest because they are calculated using the same data the model was trained on. This means they can overly reward complex models that fit the noise in the data rather than the true pattern it needs. Better scores on in-simple metrics may lead you to think that you have an amazing model when in reality it won't really know how to deal with new or unseen data. 
+
+\easysubproblem{How can we provide honest error metrics (e.g. $R^2$, SSE, $s_e$)? It may help to draw a picture of the procedure.}\spc{14} \\ 
+To provide honest error metrics that accurately relfect the performance of a model, we need to verify it with data it has not seen. A model has to be validated with out-of-sample evaluation methods. One approach that we can do is split our \( \mathcal{D}\) into \( \mathcal{D}_{test} \) and \( \mathcal{D}_{train} \), where \( \mathcal{D}_{train} \) will be used to train our model and the remaining \( \mathcal{D}_{test} \) will be used to validate our model using out-of-sample data. \\
+\includegraphics[width=0.4\textwidth]{3q.png} \\
+
+
+\easysubproblem{The procedure in (t) produces highly variable honest error metrics. Can you change the procedure slightly to reduce the variation in the honest error metrics? What is this procedure called and how is it done?}\spc{6} \\ 
+To produce more stable metrics we deploy a process called \textbf{K-fold cross validation}, which splits our data into \textbf{k} folds. For example we set \textbf{k} = 5, this splits up the data into 5 folds. We then train 5 different models on these folds. Each model will then use one fold to validate and the rest to train. For example \(model_1\) trains on \(fold_{2..n}\) and uses \(fold_{1}\) to validate. This repeats for all models and we average all the residuals to create a more stable metric.
+
+
+
+
+\end{enumerate}
+
+\newpage
+\problem{These are some questions related to validation.}
+
+\begin{enumerate}
+
+\easysubproblem{Assume you are doing one train-test split where you build the model on the training set and validate on the test set. What does the constant $K$ control? And what is its tradeoff?}\spc{4} \\ 
+\(K\) is a hyper parameter that could be selected, it signifies how you'll split the data. A low \(K\) means you'll have fewer data points in your test set, which could lead to higher bias in your evaluation because the model's performance could be sensitive to a particular subset of data for testing. A high \(K\) means you have more data points in your test set which could help reduce bias. However, this might increase variance because your averaging over more test sets leading to a wider range of performance metrics. To summarize, \(K\) controls the bias-variance trade off in models.
+
+\intermediatesubproblem{Assume you are doing one train-test split where you build the model on the training set and validate on the test set. If $n$ was very large so that there would be trivial misspecification error even when using $K=2$, would there be any benefit at all to increasing $K$ if your objective was to estimate generalization error? Explain.}\spc{4} \\ 
+If n is very large and there is trivial misspecification error present a larger n may still contain the same misspecification error accounted for. Since there is a large n our model probably fit the noise as well. The only way to develop our model is by picking a more complex set of functions in our \(H\). In the end when trivial misspecification is present there is no benefit in increasing \(K\)
+
+\easysubproblem{What problem does $K$-fold CV try to solve?}\spc{3}  \\ 
+K-fold cross-validation aims to address problems associated with the traditional train-test split. According to silver's book it is always better to provide a range of predictions rather than a single prediction by itself. This concept is sort of applicable in this scenario, rather than verifying your model with one error, you instead take the error of multiple models and average out providing a more stable out of sample metric. With a single train-test split the performance of the model can be slightly sensitive to particular subset of the data. If the split unluckily splits including extreme points the metric won't be so honest. This is solved by deploying k-fold cross-validation attempts to take a piece of the entire dataset and get the best and most stable metridcs.
+
+% \hardsubproblem{[MA] Theoretically, how does $K$-fold CV solve this problem? The Internet is your friend.}\spc{5}
+
+
+\end{enumerate}
+
+
+\end{document}
+
+
+

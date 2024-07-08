@@ -1,0 +1,49 @@
+things i did
+- clean data
+    - rearranged columns into groups, changed order for readability
+    - converted data types, while removing string values to regex and turning some floats that could be ints so its faster for the computer
+    - encoded values values (dogs_allowed, cats_allowed, coop_condo, garage_exists,   )
+    - converted categoriacal into numerical (while maintaining levels ) by grouping them by sale price and ranking the highest sale price as the highest
+    - Feature engineering
+        - Removal of unnecessary features 
+        - turned categorical to leveled factors based off mean price (dining_room_type, fuel_type, kitchen_type, )
+        - turned NaNs to zerores  (num_bed_room, num_half_bathroom, parking_charges)
+        - Turned full_address_or_zip_code into zipcode, then turned zipcodes into zones
+    - Imputation with missforrest
+    - visualization
+        - missing data 
+        - complete data
+        - in sample vs out of sample rmse 
+        - in sample vs out of sample r2 
+    - model selection : linear regression, decision trees, random forrest, bagged trees, gradient boosted dt's 
+    - model deployment : created a python function that takes input and returns prediction
+    
+- 
+libraries used
+missingno # data visualization missing data
+# Missing Forrest for data imputation
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
+from sklearn.ensemble import RandomForestRegressor
+
+# Scikitlearn for
+# Modeling 
+LinearRegression, DecisionTreeRegressor, RandomForestRegressor, BaggingRegressor, GradientBoostingRegressor
+
+# Model Selection
+from sklearn.feature_selection import SelectKBest, f_regression
+
+# Validation
+import math # for rmse
+from sklearn.metrics import mean_squared_error, r2_score
+
+
+to do :
+
+
+Models
+simple_lm, simple_lm_y_pred, simple_lm_mse
+lm_kfeatures, lm_kfeatures_y_pred, lm_kfeatures_mse
+best_dt, best_dt_y_pred, dt_grid_search.best_params_, best_dt_mse
+best_rf, best_rf_y_pred, rf_grid_search.best_params_
+best_bagged, y_pred_bagged, bagged_mse
