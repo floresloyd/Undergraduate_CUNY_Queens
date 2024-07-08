@@ -1,0 +1,328 @@
+Database
+WideWorldImportersDW:
+	City Key:
+		WWI City ID
+		City
+		State Province
+		Country
+		Continent	
+		Sales Territory
+		Region
+		Subregion
+		Location
+		Latest Recorded Population
+	Dimension.Customer:
+		Customer Key 
+		WWI Customer ID 
+		Customer	
+		Bill To Customer
+		Category
+		Buying Group
+		Primary Contact
+		Postal Code 
+	Dimension.Date:
+		Date
+		Day Number
+		Day
+		Month
+		Calendar Month Number
+		Calendar Month Label
+		Calendar Year
+		Fiscal Month Number
+		Fiscal Year
+	Dimension.Employee:
+		Employee Key
+		WWI Employee ID
+		Employee 
+		is Salesperson
+	Dimension.Payment Method:
+		Payment Method Key
+		WWI Payment Method ID 
+		Payment Method
+	Decision. Stock Item:
+		Stock Item Key
+		WWI Stock Item ID
+		Stock Item
+		Selling Package 
+		Buying Package
+		Brand
+		Size
+		Lead Time Days
+		Quantity Per Outer
+		Is Chiller Stock
+		Tax Rate
+		Unit Price
+		Recommended Retail Price
+		Typical Weight
+	Dimension.Supplier:
+		Supplier Key
+		WWI Supplier ID
+		Supplier
+		Category
+		Primary Contact
+		Supplier Reference
+		Payment Days
+		Postal Code
+	Dimension.Transaction Type:
+		Transaction Type
+		WWI Transaction Type ID
+		Transaction Type
+	Fact.Movement:
+		MovementKey
+		Date Key
+		Stock Item Key
+		Customer Key
+		Supplier Key
+		Transaction Type Key 
+		WWI Stock Item Transaction ID
+		WWI Invoice ID
+		WWI Purchase Order ID
+		Quantity
+	Fact.Order:	
+		Order Key
+		City Key
+		Customer KEy
+		Stock Item Key
+		Order Date Key
+		Picked Date Key
+		Salesperson Key
+		Picker Key
+		WWI Order ID
+		WWI Backorder ID
+		Description
+		Package
+		Quantity
+		Unit Price
+		Tax Rate
+		Total Excluding Tax 
+		Total Amount
+		Total Including Tax
+	Fact.Purchase:
+		Purchase Key
+		Date Key
+		Supplier Key
+		Stock Item Key
+		WWI Purchase Order ID
+		Ordered Outers
+		Ordered Quantity
+		Received Outers
+		Package
+		is Order Finalized
+	Fact.Sale:
+		Sale Key
+		City Key
+		Customer Key
+		Bill To Customer Key
+		Stock Item Key
+		Invoice Date Key
+		Delivery Date Key
+		Salesperson Key
+		WWI Invoice ID
+		Package	
+		QUantity
+		Unit Price
+		Tax Rate
+		Total Excluding Tax
+		Tax Amount
+		Profit
+		Total Including Tax
+		Total Dry Items
+		Total Chiller Items
+	Fact. Stock Holding:
+		Stock Holding Key
+		Stock Item Key
+		QUantity On Hand
+		Bin Location
+		Last Stocktake Quantity
+		Last Cost PRice
+		Reorder Level
+		Target Stock
+	Fact.Transaction:
+		Transaction Key
+		Date Key
+		Customer Key
+		Bill To Customer Key
+		Supplier Key
+		Transaction Type Key
+		Payment Method Key 
+		WWI Customer Transaction ID
+		WWI Supplier Transaction ID
+		WWI Invoice ID
+		WWI Purchase Order ID
+		Supplier Invoice Number
+		Total Excluding Tax
+		Tax Amount
+		Total Including Tax
+		Outstanding Balance
+		Is Finalized
+	Integration.City_Staging:
+		City Staging Key
+		WWI City ID
+		City 
+		State Province
+		Country
+		Continent 
+		Sales Territory
+		Region
+		Subregion
+		Location
+		Latest Recorded Popluation
+	Integration.Customer_Staging:
+		Customer Staging Key 
+		WWI Customer ID
+		Customer
+		Bill To Customer
+		Category
+		Buying Group 
+		Primary Contact
+		Postal Code
+	Integration.Employee_Staging:
+		Employee Staging Key
+		WWI Employee ID
+		Employee
+		Preferred Name
+		is Salesperson
+	Integration.Movement_Staging:
+		Movement Staging Key
+		Date Key
+		Stock Item Key 
+		Customer Key
+		Supplier Key	
+		Transaction Type Key
+		WWI Stock Item Transaction ID
+		WWI Invoice ID
+		WWI Purchase Order ID
+		Quantity
+		WWI Stock Item ID
+		WWI Customer ID
+		WWI Supplier ID
+		WWI Transaction Type ID
+	Integration.Order_Staging:
+		Order Staging Key
+		City Key
+		Customer Key
+		Stock Item Key
+		Order Date Key
+		Picked Date Key
+		Salesperson Key
+		Picker Key
+		WWI Order ID
+		WWI Backorder ID
+		Package
+		Quantity
+		Unit Price
+		Tax Rate
+		Total Excluding Tax
+		Tax Amount
+		Total Including Tax
+		WWI City ID
+		WWI Customer ID
+		WWI Stock Item ID
+		WWI Salesperson ID
+		WWI Picker ID
+	Integration.PaymentMethod_Staging:
+		Payment Method Staging Key
+		WWI Payment Method ID
+		Payment Method
+	Integration.Purchase_Staging:
+		Purchase Staging Key
+		Date Key
+		Supplier Key
+		Stock Item Key
+		WWI Purchase Order ID
+		Ordered Outers
+		Ordered Quantity
+		Received Outers		
+		Package
+		Is Order Finalized
+		WWI Supplier ID
+		WWI Stock Item ID
+	Integration.Sale_staging:
+		Sale Staging Key 	
+		City Key
+		Customer Key 
+		Bill To Customer Key
+		Stock Item Key
+		Invoice Date Key
+		Delivery Date Key
+		Salesperson Key
+		WWI Invoice ID
+		Package
+		Quantity
+		Unit Price
+		Tax Rate
+		Total Excluding Tax
+		Tax Amount
+		Profit
+		Total Chiller Items
+		WWI City ID
+		WWI Customer ID
+		WWI Bill To Customer ID
+		WWI Stock Item ID
+		WWI Salesperson ID
+	Integration.StockHolding_Staging:
+		Stock Holding Staging Key
+		Stock Item Key
+		Quantity On Hand
+		Bin Location
+		Last Stocktake Quantity
+		Last Cost Price
+		Reorder Level
+		Target Stock Level
+		WWI Stock Item ID
+	Integration.StockItem_Staging:
+		Stock Item Staging Key
+		WWI Stock Item ID
+		Stock Item
+		Selling Package
+		Buying Package
+		Brand
+		Size
+		Lead Time Days
+		Quantity Per Outer
+		Is Chiller Stock
+		Barcode
+		Tax Rate
+		Unit Price
+		Recommended Retail Price 
+		Typical Weight Per Unit
+	Integration.Supplier_Staging:
+		Supplier Staging Key
+		WWI Supplier ID
+		Supplier
+		Category
+		Primary Contact
+		Supplier Reference 
+		Payment Days
+		Postal Code 
+	Integration.Transaction_Staging:
+		Transaction Staging Key
+		Date Key
+		Customer Key
+		Bill To Customer Key
+		Supplier Key
+		Transaction Type Key
+		Payment Method Key
+		WWI Customer Transaction ID
+		WWI Invoice ID
+		WWI Purchase Order ID
+		Supplier Invoice NUmber
+		Total Excluding Tax
+		Tax Amount
+		Total Including Tax
+		Outstanding Balance
+		Is Finalized
+		WWI Customer ID
+		WWI Bill To Customer ID
+		WWI Supplier ID
+		WWI Transaction Type ID
+		WWI Payment Method ID
+	Integration.TransactionType_Staging:	
+		Transaction Type ID
+		WWI Transaction Type ID
+		Transaction Type 
+		
+		
+	
+		
+		

@@ -1,0 +1,227 @@
+CREATE TABLE HR.Employee
+(
+    BusinessEntityID INT PRIMARY KEY NOT NULL,
+    NationalIDNumber NVARCHAR(15) NOT NULL,
+    LoginID NVARCHAR(256) NOT NULL,
+    JobTitle NVARCHAR(50) NOT NULL,
+    BirthDate DATE NOT NULL,
+    MaritalStatus NCHAR(1) NOT NULL,
+    Gender NCHAR(1) NOT NULL,
+    HireDate DATE NOT NULL,
+    SalariedFlag BIT NOT NULL,
+    VacationHours SMALLINT NOT NULL,
+    SickLeaveHours SMALLINT NOT NULL,
+    CurrentFlag BIT NOT NULL,
+    rowguid UNIQUEIDENTIFIER NOT NULL,
+    ModifiedDate DATETIME NOT NULL
+);
+
+
+CREATE TABLE HR.EmployeePayHistory
+(
+    EmployeePayHistoryID INT PRIMARY KEY NOT NULL,
+    BusinessEntityID INT FOREIGN KEY REFERENCES    	HR.Employee(BusinessEntityID) NOT NULL,
+    RateChangeDate DATETIME NOT NULL,
+    Rate MONEY NOT NULL,
+    PayFrequency TINYINT NOT NULL,
+    ModifiedDate DATETIME NOT NULL
+);
+
+
+CREATE TABLE HumanResources.Employee
+(
+    EmployeeId INT PRIMARY KEY NOT NULL,
+    EmployeeLastName NVARCHAR NOT NULL,
+    EmployeeFirstName NVARCHAR NOT NULL,
+    EmployeeTitle NVARCHAR NOT NULL,
+    EmployeeTitleOfCourtesy NVARCHAR NOT NULL,
+    BirthDate DATE NOT NULL,
+    HireDate DATE NOT NULL,
+    EmployeeAddress NVARCHAR NOT NULL,
+    EmployeeCity NVARCHAR,
+    EmployeeRegion NVARCHAR,
+    EmployeePostalCode NVARCHAR,
+    EmployeeCountry NVARCHAR NOT NULL,
+    EmployeePhoneNumber NVARCHAR NOT NULL,
+    EmployeeManagerId INT FOREIGN KEY REFERENCES HumanResources.Employee(EmployeeId)
+);
+
+
+CREATE TABLE Person.Person
+(
+    BusinessEntityID INT PRIMARY KEY NOT NULL,
+    PersonType NCHAR(2) NOT NULL,
+    NameStyle BIT NOT NULL,
+    Title NVARCHAR(8),
+    FirstName NVARCHAR(50) NOT NULL,
+    MiddleName NVARCHAR(50),
+    LastName NVARCHAR(50) NOT NULL,
+    Suffix NVARCHAR(10),
+    EmailPromotion INT NOT NULL,
+    rowguid UNIQUEIDENTIFIER NOT NULL,
+    ModifiedDate DATETIME NOT NULL
+);
+
+
+CREATE TABLE Production.Category
+(
+    CategoryId INT PRIMARY KEY NOT NULL,
+    CategoryName NVARCHAR(MAX) NOT NULL,
+    Description NVARCHAR(MAX) NOT NULL
+);
+
+
+CREATE TABLE Production.Product
+(
+    ProductId INT PRIMARY KEY NOT NULL,
+    ProductName NVARCHAR(MAX) NOT NULL,
+    SupplierId INT NOT NULL, 
+    CategoryId INT NOT NULL, 
+    UnitPrice MONEY NOT NULL,
+    Discontinued BIT NOT NULL,
+
+    FOREIGN KEY (SupplierId) REFERENCES YourSupplierTableNameHere(SupplierPrimaryKeyColumn),
+    FOREIGN KEY (CategoryId) REFERENCES Production.Category(CategoryId)
+);
+
+
+CREATE TABLE Production.Supplier
+(
+    SupplierId INT PRIMARY KEY NOT NULL,
+    SupplierCompanyName NVARCHAR(MAX) NOT NULL,
+    SupplierContactName NVARCHAR(MAX) NOT NULL,
+    SupplierContactTitle NVARCHAR(MAX) NOT NULL,
+    SupplierAddress NVARCHAR(MAX) NOT NULL,
+    SupplierCity NVARCHAR(MAX) NOT NULL,
+    SupplierRegion NVARCHAR(MAX) NULL,
+    SupplierPostalCode NVARCHAR(MAX) NULL,
+    SupplierCountry NVARCHAR(MAX) NOT NULL,
+    SupplierPhoneNumber NVARCHAR(MAX) NOT NULL,
+    SupplierFaxNumber NVARCHAR(MAX) NULL
+);
+
+
+CREATE TABLE RelationalCalculi.USSupremeCourtJustices
+(
+    JusticeId INT PRIMARY KEY NOT NULL,
+    LastName NVARCHAR(MAX) NOT NULL,
+    FirstName NVARCHAR(MAX) NOT NULL,
+    StateOfBirth NVARCHAR(MAX) NOT NULL,
+    YearOfBirth NCHAR(4) NOT NULL
+);
+
+
+CREATE TABLE RelationalCrossJoin.S1
+(
+    Letter CHAR(1) NULL
+);
+
+CREATE TABLE RelationalCrossJoin.S2
+(
+    Number CHAR(1) NULL
+);
+
+
+
+CREATE TABLE Sales.Customer
+(
+    CustomerId INT NOT NULL PRIMARY KEY,
+    CustomerCompanyName NVARCHAR(MAX) NOT NULL,
+    CustomerContactName NVARCHAR(MAX) NOT NULL,
+    CustomerContactTitle NVARCHAR(MAX) NOT NULL,
+    CustomerAddress NVARCHAR(MAX) NOT NULL,
+    CustomerCity NVARCHAR(MAX) NOT NULL,
+    CustomerRegion NVARCHAR(MAX) NULL,
+    CustomerPostalCode NVARCHAR(MAX) NULL,
+    CustomerCountry NVARCHAR(MAX) NOT NULL,
+    CustomerPhoneNumber NVARCHAR(MAX) NOT NULL,
+    CustomerFaxNumber NVARCHAR(MAX) NULL
+);
+
+
+CREATE TABLE Sales.Order
+(
+    OrderId INT NOT NULL PRIMARY KEY,
+    CustomerId INT NULL FOREIGN KEY REFERENCES Sales.Customer(CustomerId),
+    EmployeeId INT NOT NULL,
+    ShipperId INT NOT NULL,
+    OrderDate DATE NOT NULL,
+    RequiredDate DATE NOT NULL,
+    ShipToDate DATE NULL,
+    Freight MONEY NOT NULL,
+    ShipToName NVARCHAR(MAX) NOT NULL,
+    ShipToAddress NVARCHAR(MAX) NOT NULL,
+    ShipToCity NVARCHAR(MAX) NOT NULL,
+    ShipToRegion NVARCHAR(MAX) NULL,
+    ShipToPostalCode NVARCHAR(MAX) NULL,
+    ShipToCountry NVARCHAR(MAX) NOT NULL,
+    UserAuthenticationId INT NULL,
+    DateAdded DATETIME2(7) NULL,
+    DateOfLastUpdate DATETIME2(7) NULL
+);
+
+
+CREATE TABLE Sales.OrderDetail
+(
+    OrderId INT NOT NULL FOREIGN KEY REFERENCES Sales.Order(OrderId),
+    ProductId INT NOT NULL,
+    UnitPrice MONEY NOT NULL,
+    Quantity SMALLINT NOT NULL,
+    DiscountPercentage NUMERIC NOT NULL,
+    
+    PRIMARY KEY (OrderId, ProductId)
+);
+
+CREATE TABLE Sales.Shipper
+(
+    ShipperId INT NOT NULL PRIMARY KEY,
+    ShipperCompanyName NVARCHAR(MAX) NOT NULL,
+    PhoneNumber NVARCHAR(MAX) NOT NULL
+);
+
+
+CREATE TABLE SQLChallenge.logs
+(
+    student_id INT NOT NULL,
+    marks INT NOT NULL
+);
+
+
+CREATE TABLE SystemVersioned.Employee
+(
+    EmployeeId INT PRIMARY KEY NOT NULL,
+    EmployeeFullName VARCHAR(25) NOT NULL,
+    Department VARCHAR(50) NOT NULL,
+    Salary MONEY NOT NULL,
+    Notes VARCHAR(60) NOT NULL,
+    SysStart DATETIME2(0) NOT NULL,
+    SysEnd DATETIME2(0) NOT NULL
+)
+WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = SystemVersioned.EmployeeHistory));
+
+
+CREATE TABLE Triggered.AuditTriggeredEmployeeHistory
+(
+    TriggeredEmployeeHistoryId INT PRIMARY KEY NOT NULL,
+    AuditTriggeredEmployeeHistoryTimestamp DATETIME2(7) NULL,
+    TriggerOption CHAR(1) NULL,
+    EmployeeId INT NOT NULL,
+    EmployeeFullName VARCHAR(25) NOT NULL,
+    Department VARCHAR(50) NOT NULL,
+    Salary MONEY NOT NULL,
+    Notes VARCHAR(60) NOT NULL,
+    IsDeleted CHAR(1) NULL,
+    TransactionNumber INT NULL,
+    UserAuthenticatedKey INT NULL,
+    SysStartTime DATETIME2(7) NULL,
+    SysEndTime DATETIME2(7) NULL,
+    TimestampRowChanged DATETIME2(7) NULL
+);
+
+
+
+
+
+
+
+

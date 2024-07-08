@@ -1,0 +1,147 @@
+Loyd Flores
+Prof. Peter Heller
+HW #1
+________________________________________________________________________________________________________________________________________________
+-- 1
+-- Return orders placed in June 2015
+-- Tables involved: TSQLV4 database, Sales.Orders table
+
+USE [Northwinds2022TSQLV7				-- Specify to use TSQLv4 Database
+SELECT OrderId, OrderDate, CustomerId, 			-- Returns selected columns
+FROM [Sales].[order					-- Specify which table to query
+WHERE orderdate >= '2015-06-01' AND orderdate <= '2015-06-30';  -- Orders placed in June 2015 (2015-06-01 to 2015-06-30)
+
+________________________________________________________________________________________________________________________________________________
+-- 2 
+-- Return orders placed on the last day of the month
+-- Tables involved: Sales.Orders table
+
+USE [Northwinds2022TSQLV7			  -- Use TSQLv4 Database
+SELECT OrderId, OrderDate, CustomerId, EmployeeId -- Return these columns. EOMONTH = END OF MONTH
+FROM [Sales].[Order]                              -- FROM sales.orders tableyyy
+WHERE orderdate = EOMONTH(orderdate)
+________________________________________________________________________________________________________________________________________________
+
+-- 3 
+-- Return employees with last name containing the letter 'e' twice or more
+-- Tables involved: HR.Employees table
+
+USE [Northwinds2022TSQLV7]                                                  -- USE TSQLv4 Database
+SELECT EmployeeId, EmployeeFirstName, EmployeeLastName                      -- Return these columns
+FROM HumanResources.Employee                                                -- Querying from the HR.Employees table
+WHERE LEN(EmployeeLastName) - LEN(REPLACE(EmployeeLastName, 'e', '')) = 2;  -- Where 'e' occurs twice in a last name.
+                                                                            -- Logic : Name - all letter e's. The difference is the number of e's
+________________________________________________________________________________________________________________________________________________
+
+-- 4 
+-- Return orders with total value(qty*unitprice) greater than 10000
+-- sorted by total value
+-- Tables involved: Sales.OrderDetails table
+
+USE [Northwinds2022TSQLV7]                                     -- Use this Database
+SELECT OrderId, SUM(Quantity * UnitPrice) as totalvalue        -- Return to me OrderID and the (Qty * UnitPrice) as totalvalue
+FROM Sales.OrderDetail                                         -- From this table
+GROUP BY orderid                                               -- Group order ID's together
+HAVING SUM(Quantity * UnitPrice) > 10000                       -- Return only the totalvalue > 10,000
+ORDER BY totalvalue DESC;                                      -- Sort by highest to lowest
+________________________________________________________________________________________________________________________________________________
+
+-- 5
+-- Write a query against the HR.Employees table that returns employees
+-- with a last name that starts with a lower case letter.
+-- Remember that the collation of the sample database
+-- is case insensitive (Latin1_General_CI_AS).
+-- For simplicity, you can assume that only English letters are used
+-- in the employee last names.
+-- Tables involved: Sales.OrderDetails table
+
+USE [Northwinds2022TSQLV7]                                                    -- Use this database
+SELECT EmployeeId, EmployeeLastName                                           -- Return empid and last name
+FROM HumanResources.Employee                                                  -- From this table
+WHERE ascii(left(EmployeeLastName, 1)) between ascii('a') and ascii('z');     -- If the first letter in their name is small caps (ascii a-z)
+
+________________________________________________________________________________________________________________________________________________
+-- 6
+-- Explain the difference between the following two queries
+
+-- Query 1
+SELECT empid, COUNT(*) AS numorders      -- Query 1: It provides a count of orders placed by each employee before May 1, 2016.
+FROM Sales.Orders
+WHERE orderdate < '20160501'
+GROUP BY empid;
+
+-- Query 2
+SELECT empid, COUNT(*) AS numorders     -- Query 2: It provides a count of all orders placed by each employee but only includes 
+FROM Sales.Orders                       -- the counts where the maximum orderdate is before May 1, 2016.
+GROUP BY empid
+HAVING MAX(orderdate) < '20160501'
+
+					-- In simpler terms, Query 1 counts how many orders each employee had before May 1, 2016. 
+					-- Query 2 counts how many orders each employee had in total but only 
+					-- shows those employees whose latest order (maximum orderdate) was before May 1, 2016. 
+
+					-- So, Query 1 focuses on orders before a specific date, 
+					-- while Query 2 considers all orders but filters based on the latest order date.
+
+________________________________________________________________________________________________________________________________________________
+-- 7 
+-- Return the three ship countries with the highest average freight for orders placed in 2015
+-- Tables involved: Sales.Orders table
+
+USE [Northwinds2022TSQLV7]                                   -- USE this database  
+SELECT TOP 3 ShipToCountry, AVG(Freight) as avgfreight       -- Return the three highest countries with highest freight
+FROM [Sales].[Order]                                         -- From Sales.orders table
+WHERE YEAR(orderdate) = 2015                                 -- For the year 2015
+GROUP BY ShipToCountry                                       -- Make sure to account for each country only once
+ORDER BY avgfreight DESC;                                    -- sort highest to lowest
+
+________________________________________________________________________________________________________________________________________________
+-- 8 
+-- Calculate row numbers for orders
+-- based on order date ordering (using order id as tiebreaker)
+-- for each customer separately
+-- Tables involved: Sales.Orders table
+
+-- Arranges all of the customers orders by puting it to row 1 ... n
+-- Arranged by date
+
+USE [Northwinds2022TSQLV7]                                                                                                         -- Use THIS DB            
+SELECT CustomerId, OrderDate, OrderId, ROW_NUMBER() OVER (PARTITION BY CustomerId ORDER BY OrderDate, OrderId) AS RowNumber  
+FROM Sales.[Order]                                                                                                    
+ORDER BY CustomerId, RowNumber;                                                                                                    -- Sorting by custid so customer 1 goes first and rownumber to see all orders in a cronological order
+
+--ROW_NUMBER (counts rows), --OVER (how we count the rows), We cout it by grouping all cust id orders together
+________________________________________________________________________________________________________________________________________________
+-- 9
+-- Figure out and return for each employee the gender based on the title of courtesy
+-- Ms., Mrs. - Female, Mr. - Male, Dr. - Unknown
+-- Tables involved: HR.Employees table
+
+USE [Northwinds2022TSQLV7]                                                                           -- USE This DB
+SELECT [EmployeeId], EmployeeFirstName, EmployeeLastName, EmployeeTitleOfCourtesy,                   -- Return these values + gender
+    CASE                                                                            
+            WHEN EmployeeTitleOfCourtesy ='Mr.' THEN 'Male'                                          -- If title = Mr, then gender = male
+            WHEN EmployeeTitleOfCourtesy ='Ms.' OR EmployeeTitleOfCourtesy = 'Mrs.' THEN 'Female'    -- If title = Ms or Mrs, then = female
+            ELSE 'Uknown'                                                                            -- Else uknown
+        END AS Gender                                                                                -- VARIABLE NAME (gender)
+FROM HumanResources.Employee                                                                         -- From hr.employees table   
+
+________________________________________________________________________________________________________________________________________________
+-- 10
+-- Return for each customer the customer ID and region
+-- sort the rows in the output by region
+-- having NULLs sort last (after non-NULL values)
+-- Note that the default in T-SQL is that NULLs sort first
+-- Tables involved: Sales.Customers table
+
+USE [Northwinds2022TSQLV7]
+SELECT CustomerId, CustomerRegion					-- Return custid and region
+FROM Sales.Customer							-- from customerid
+ORDER BY								-- MANUAL SORTING IMPLEMENTATION
+    CASE
+        WHEN CustomerRegion IS NULL THEN 1				-- Assign a higher value to NULL to sort it, if null make it 1
+        ELSE 0 -- Sort non-NULL values first				-- if non-null make it go first
+    END, CustomerRegion;					        -- 0 < 1; 0 goes first
+	
+
+
