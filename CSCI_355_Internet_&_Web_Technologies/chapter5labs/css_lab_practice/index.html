@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <title>CSS Practice</title>
+   <style>
+      /* Container styling */
+      .song-container {
+         width: 600px;
+         height: 280px;
+         border: 2px solid blue;
+         padding: 5px;
+         background-color: #F0F0F0;
+      }
+      
+      /* Title styling */
+      h2 {
+         font-size: 16pt;
+         font-family: Arial, sans-serif;
+         color: blue;
+         font-style: italic;
+         margin: 0; /* Ensures no default margin is applied to the title */
+      }
+      
+      /* Yellow section styling */
+      .yellow-section {
+         background-color: yellow;
+         float: left;
+         width: 200px;
+         padding: 10px;
+         margin-right: 10px;
+         margin-top: 0;
+         margin-bottom: 0;
+         margin-left: 0;
+      }
+      
+      /* Orange section styling */
+      .orange-section {
+         background-color: orange;
+         position: absolute;
+         left: 110px;
+         top: 200px;
+         width: 200px;
+         padding: 10px;
+      }
+      
+      /* Orange-red section styling */
+      .orange-red-section {
+         background-color: rgb(255, 80, 0);
+         color: white;
+         float: right;
+         width: 200px;
+         padding: 10px;
+         margin-right: 40px;
+         margin-top: 20px;
+         margin-bottom: 0;
+         margin-left: 0;
+      }
+      
+      /* Reset margins for the divs to ensure they align properly */
+      div {
+         margin: 0;
+      }
+   </style>
+</head>
+<body>
+<div class="song-container">
+   <h2>Yesterday</h2>
+   <div class="yellow-section">
+      Yesterday, All those backups
+seemed a waste of pay. Now
+my database has gone away.
+Oh I believe in yesterday.
+   </div>
+   <div>
+      Suddenly, There's not half the files there used to be, And
+there's a milestone hanging over me. The system crashed
+so suddenly. I pushed something wrong, What it was I
+could not say.
+   </div>
+   <div class="orange-section">
+      Now all my data's gone and I long for yesterday-ay-ay-ay.
+   </div>
+   <div class="orange-red-section">
+      Yesterday, The need for back-ups seemed so far away. I knew my data was all here to stay, Now I believe in yesterday.
+   </div>
+</div>
+</body>
+</html>

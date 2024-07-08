@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Join a social network</h1>
+    <form action="https://wp.zybooks.com/form-viewer.php" method="POST" enctype="multipart/form-data" id="myform">
+        <div>
+            <label for="fullName">Full name:</label>
+            <input type="text" id="fullName" name="fullName" required />
+        </div>
+        <div>
+            <label for="email">Email address:</label>
+            <input type="text" id="email" name="email" required />
+        </div>
+        <div>
+            <label for="about">About you:</label>
+            <textarea cols="50" rows="3" id="about" name="about"></textarea>
+        </div>
+        <div>
+            <label for="picture">Photo:</label>
+            <input type="file" id="picture" name="picture" accept="image/png, image/jpeg" />
+        </div>
+        <div>
+            <input type="submit" id="submit" value="Submit" form="myform" />
+        </div>
+    </form>
+</body>
+</html>

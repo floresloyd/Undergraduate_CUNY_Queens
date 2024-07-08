@@ -1,0 +1,27 @@
+body {
+   font-family: Roboto, Helvetica, sans-serif;
+   text-align: center;
+}
+
+.x {
+   color: red;
+}
+
+.o {
+   color: blue;
+}
+ 
+#board {
+   font: 85px Arial, sans-serif;
+   margin: 3px;
+   display: grid; /* Makes the #board a grid layout container */
+   grid-template-columns: 100px 100px 100px; /* Creates three columns, each 100px wide */
+   grid-template-rows: 100px 100px 100px; /* Creates three rows, each 100px tall */
+   grid-gap: 10px; /* Sets a 10px gap between the grid cells */
+   justify-content: center; /* Centers the grid horizontally */
+}
+
+#board > div {
+   border: 1px solid LightSkyBlue;
+   text-align: center;
+}
