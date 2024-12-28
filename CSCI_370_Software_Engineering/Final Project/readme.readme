@@ -1,0 +1,44 @@
+/**
+Author    : Loyd Flores 
+Student ID: 24101949
+Professor : Prof. Aryeh Greenberg
+Class     : CSCI 370
+Topic     : Factory Pattern
+**/
+
+//Refer to the code below,
+
+public class BurgerFactory {
+    public ???? orderBurger(String request) {
+        if ("BEEF".equals(request)) {
+            BeefBurger burger = new BeefBurger();
+            burger.prepare();
+            return burger;
+        } else if ("VEGGIE".equals(request)) {
+            VeggieBurger burger = new VeggieBurger();
+            burger.prepare();
+            return burger;
+        }
+    }
+}
+
+// Our method can only return a single type of burger in this code because the burgers have no base class
+
+// Problem : If we want to add/remove new types of burgers, we violate the ff:
+// Open-closed Violation : The Open-Closed Principle states that a class should be open for extension but closed for modification. If you're directly modifying the existing method rather than extending it, you're violating this principle.
+
+// Single Responsibility Violation: The Single Responsibility Principle states that a class should have only one reason to change. If you're modifying the method to handle multiple responsibilities (e.g., adding a new burger type and also managing some unrelated logic), you're violating this principle.
+
+
+// Solution : 
+// 1. take the burger creation logic and separate it into its own class SimpleBurgerFactory
+// 2. This new class' only job is to create burgers (SINGLE RESPONSIBILITY)
+// 3. All products must impliment an abstract class (Veggie and chicken burger must implement burger class)
+
+
+// When to use it
+1. If you have no idea of the exact types of objects your code will work with
+2. Allows it to make extension of code while preventing the breakage of other components of code. Follows open-closed and single responsibility principles.
+
+
+// UML DIAGRAM LINK :https://lucid.app/lucidchart/a437a287-c30f-4c73-815b-262c78e4bbc8/edit?viewport_loc=-769%2C-169%2C3700%2C1808%2CHWEp-vi-RSFO&invitationId=inv_1b2c1e98-5e31-456f-811a-d33ee69f61b7
