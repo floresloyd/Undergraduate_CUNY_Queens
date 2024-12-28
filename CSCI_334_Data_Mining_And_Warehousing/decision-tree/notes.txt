@@ -1,0 +1,29 @@
+<h1>Validate</h1>
+      <form onSubmit={handleValidation}>
+        <div>
+          <label htmlFor="firstName">First Name:</label>
+          <input
+            type="text"
+            id="firstName"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value.toLowerCase().replace(/\s/g, ''))} // Force lowercase and remove spaces
+            required
+            placeholder="Enter your first name"
+          />
+        </div>
+        <div>
+          <label htmlFor="lastInitial">Last Initial:</label>
+          <input
+            type="text"
+            id="lastInitial"
+            value={lastInitial}
+            onChange={(e) =>
+              setLastInitial(e.target.value.toLowerCase().slice(0, 1)) // Force lowercase and limit to one character
+            }
+            required
+            placeholder="Enter your last initial"
+          />
+        </div>
+        <button type="submit">Submit</button>
+      </form>
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}

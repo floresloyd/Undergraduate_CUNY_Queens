@@ -1,0 +1,81 @@
+*** Below is the input image ***
+. . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . 1 . . . . . . . . . . 
+. . . . . . . . . . . 1 1 1 . . . . . . . . . 
+. . . . . . . . . . 1 1 1 1 1 . . . . . . . . 
+. . . . . . . . . 1 1 1 1 1 1 1 . . . . . . . 
+. . . . . . . . 1 1 1 1 1 1 1 1 1 . . . . . . 
+. . . . . . . 1 1 1 1 1 1 1 1 1 1 1 . . . . . 
+. . . . . . 1 1 1 1 1 1 1 1 1 1 1 1 1 . . . . 
+. . . . . 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 . . . 
+. . . . 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 . . 
+. . . 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 . 
+. . . . 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 . . 
+. . . . . 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 . . . 
+. . . . . . 1 1 1 1 1 1 1 1 1 1 1 1 1 . . . . 
+. . . . . . . 1 1 1 1 1 1 1 1 1 1 1 . . . . . 
+. . . . . . . . 1 1 1 1 1 1 1 1 1 . . . . . . 
+. . . . . . . . . 1 1 1 1 1 1 1 . . . . . . . 
+. . . . . . . . . . 1 1 1 1 1 . . . . . . . . 
+. . . . . . . . . . . 1 1 1 . . . . . . . . . 
+. . . . . . . . . . . . 1 . . . . . . . . . . 
+. . . . . . . . . . . . 1 . . . . . . . . . . 
+. . . 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 . 
+. . . 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 . 
+. . . 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 . 
+. . . 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 . 
+. . . 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 . 
+. . . 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 . 
+. . . 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 . 
+. . . 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 . 
+. . . 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 . 
+. . . . 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 . . 
+. . . . . 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 . . . 
+. . . . . . 1 1 1 1 1 1 1 1 1 1 1 1 1 . . . . 
+. . . . . . . 1 1 1 1 1 1 1 1 1 1 1 . . . . . 
+. . . . . . . . 1 1 1 1 1 1 1 1 1 . . . . . . 
+. . . . . . . . . 1 1 1 1 1 1 1 . . . . . . . 
+. . . . . . . . . . 1 1 1 1 1 . . . . . . . . 
+. . . . . . . . . . . 1 1 1 . . . . . . . . . 
+. . . . . . . . . . . . 1 . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . 
+*** Entering distanceTransform() method ... ***
+*** Entering distancePass1() ***
+1st Pass transform with choice = 4 : City-block Distance Transform
+*** Entering distancePass2() ***
+2nd Pass transform with choice = 4 : City-block Distance Transform
+*** Leaving distanceTransform() Method ... ***
+newMinVal: 1 newMaxVal: 10
+*** Entering compression() method ***
+Skeleton Extracted ...
+*** Leaving compression() method ***
+Skeleton File closed ...
+Skeleton File read ...
+ZF array Zeroed out ...
+*** Entering LoadingSkeleton() ***
+Loaded: 11 12 10
+Loaded: 22 3 1
+Loaded: 22 21 1
+Loaded: 23 4 2
+Loaded: 23 20 2
+Loaded: 24 5 3
+Loaded: 24 19 3
+Loaded: 25 6 4
+Loaded: 25 18 4
+Loaded: 26 7 5
+Loaded: 26 17 5
+Loaded: 27 8 6
+Loaded: 27 16 6
+Loaded: 28 9 7
+Loaded: 28 15 7
+Loaded: 29 10 8
+Loaded: 29 14 8
+Loaded: 30 12 10
+*** Skeleton loaded ... ***
+*** Entering deCompression() ***
+expansionPass1 ...
+expansionPass2 ...
+*** Leaving deCompression() ***
+*** deCompressed Header Printed ***
+ZFArray printed onto deConpressedFIle

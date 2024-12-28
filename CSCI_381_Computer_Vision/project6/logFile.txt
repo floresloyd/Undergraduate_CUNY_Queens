@@ -1,0 +1,6 @@
+Entering connected4 method 
+After connected4 pass1, newLabel = 54
+After connected4 pass2, newLabel = 54
+In connected4, after manageEQTable, trueNumCC = 25
+Entering drawBoxes method
+Leaving drawBoxes method
